@@ -44,7 +44,8 @@ Route 30 · backend `index.ts` 25 · backend `*.route.ts` 80 · Screen/Component
 ## Diğer
 - `@/` takma adı `src/`'yi gösterir.
 - Kullanıcıya görünen metinler `src/i18n/tr.json`'dan okunur (T0.8 sonrası); sabit Türkçe metin yazılmaz.
-- Zaman gerektiren kod `Clock` soyutlamasını kullanır (`src/lib/clock.ts`, T0.3).
+- Zaman gerektiren kod `new Date()` yerine `Clock` kullanır (`src/lib/clock.ts`, backend'de `_shared/clock.ts`); testlerde `createFixedClock` ile zaman sabitlenir.
+- Ekran/bileşen testleri `@/test-utils/render` içindeki `renderWithProviders` ile yazılır; `app/**` altına test dosyası konmaz (Expo Router her dosyayı rota sayar).
 - Gizli değerler yalnızca `.env.local` / EAS secrets'ta; repoda yalnızca değersiz `.env.example`.
 - Satır sonları LF (`.gitattributes`).
 
@@ -56,5 +57,10 @@ npm run typecheck  # tsc --noEmit
 npm run lint       # ESLint (katman + boyut kuralları)
 npm run lint:fix   # otomatik düzeltilebilenleri düzelt
 npm run format     # Prettier
+npm test           # tüm Jest testleri (unit + ui)
+npm run test:unit  # saf Node testleri: domain, lib, servisler, repository'ler
+npm run test:ui    # bileşen, Screen ve hook testleri (React Native Testing Library)
+npm run test:coverage   # kapsam raporu; domain < %90 veya servisler < %80 ise hata
+npm run test:functions  # Edge Function testleri (deno test)
 ```
-Commit öncesinde husky + lint-staged değişen dosyalarda lint ve format'ı otomatik çalıştırır. Test ve Supabase komutları T0.3–T0.4'te eklenecek.
+Commit öncesinde husky + lint-staged değişen dosyalarda lint ve format'ı otomatik çalıştırır. Supabase komutları T0.4'te eklenecek.
