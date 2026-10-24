@@ -1,0 +1,15 @@
+# Tüm metin dosyalarında satır sonu LF
+* text=auto eol=lf
+
+# İkili dosyalar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.jks binary
+*.keystore binary
+*.p12 binary

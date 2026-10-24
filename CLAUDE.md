@@ -1,0 +1,57 @@
+# CLAUDE.md
+
+Bu dosya, bu repoda çalışan Claude (ve geliştiriciler) için bağlayıcı kuralları özetler. Ayrıntılar ve görev listesi `TODO.md`'dedir; çelişki olursa `TODO.md` §1 esastır.
+
+## Proje
+Arıcı Kovan Takip — Expo Router (React Native, TypeScript strict) istemci + Supabase backend (Postgres, RLS, Deno Edge Functions). Çevrimdışı öncelikli: yazmalar yerel SQLite'a + outbox'a gider, senkron arka planda yapılır.
+
+## Çalışma düzeni
+1. Bir göreve başlamadan önce `TODO.md`'de görevin **Dosyalar** satırını oku. Yalnızca o listedeki dosyaları aç; listede olmayan bir katmana kod gerekiyorsa önce `TODO.md`'yi güncelle.
+2. Görev, kabul kriterleri **iOS ve Android'de** doğrulanmadan tamamlanmış sayılmaz.
+3. Görev bitince `TODO.md` → "Güncel Durum" bölümünü ve görevin kutucuklarını güncelle.
+4. İş bölümü ve sıra için `docs/YOL_HARITASI.md`'ye bak.
+
+## Mimari kurallar (özet)
+- **Her endpoint ayrı dosya.** Her ekran rotası `app/**` altında ayrı `.tsx`; her backend uç noktası ayrı `*.route.ts`.
+- **İnce route.** `app/**` dosyası yalnızca parametre okur ve **tek** bir `<XScreen />` render eder (≤ 30 satır). Backend route: doğrula → servisi çağır → yanıtla (≤ 80 satır). İş mantığı, DB veya üçüncü parti çağrısı route'ta olmaz.
+- **İş mantığı serviste.** Servisler `Request`/`Response` ya da React bilmez; bağımlılıkları (repository, provider, `Clock`) parametre olarak alır.
+- **Saf domain.** `src/domain/**` yalnızca `zod` ve `src/lib` saf yardımcılarını import eder; React/RN/Expo/`data`/`services` yok.
+- **Bileşenler props ile çalışır.** Bileşen servis veya repository import etmez; her alt bileşen kendi dosyasında.
+- **Okuma akışı:** `Screen → hook → Service.watch*() → Repository.watch*()`. Hook repository'ye doğrudan erişmez.
+- **Backend:** `routes/` → `services/` → `repositories/` / `providers/`. Ortak kod `supabase/functions/_shared/` altında; `_shared` hiçbir fonksiyon klasöründen import etmez.
+
+### Frontend import yönü
+| Katman | Import edebileceği |
+|---|---|
+| Route `app/**` | yalnızca `src/features/*/screens` |
+| Screen | aynı feature'ın `components`, `hooks`; `components/ui`; `theme`; `i18n` |
+| Component | `components/ui`, `theme`, `i18n`, `lib/format` |
+| Hook | `services`, `domain` (tipler) |
+| Service | `domain`, `data/repositories`, `data/api`, `lib`, platform adaptörleri |
+| Repository | `data/db`, `domain` (tipler) |
+| API client | `data/supabase/client.ts`, `domain` (tipler) |
+
+Bu kurallar T0.2'de ESLint (`eslint-plugin-boundaries`, `max-lines`) ile zorlanacak.
+
+## Adlandırma
+- Frontend: `XScreen.tsx`, `PascalCase.tsx`, `useX.ts`, `XService.ts`, `XRepository.ts`, `kebab-case.client.ts`, domain `kebab-case.ts`.
+- Backend: `kebab-case.route.ts`, `.service.ts`, `.repository.ts`, `.provider.ts`; fonksiyon klasörleri kebab-case.
+- Testler test ettiği dosyanın yanında: `<dosya>.test.ts(x)`; backend'de `tests/<ad>.test.ts`.
+
+## Boyut sınırları
+Route 30 · backend `index.ts` 25 · backend `*.route.ts` 80 · Screen/Component 150 · Service/hook 250 satır. Aşan dosya bölünür.
+
+## Diğer
+- `@/` takma adı `src/`'yi gösterir.
+- Kullanıcıya görünen metinler `src/i18n/tr.json`'dan okunur (T0.8 sonrası); sabit Türkçe metin yazılmaz.
+- Zaman gerektiren kod `Clock` soyutlamasını kullanır (`src/lib/clock.ts`, T0.3).
+- Gizli değerler yalnızca `.env.local` / EAS secrets'ta; repoda yalnızca değersiz `.env.example`.
+- Satır sonları LF (`.gitattributes`).
+
+## Komutlar
+```bash
+npm install
+npm start          # Expo geliştirme sunucusu
+npm run typecheck  # tsc --noEmit
+```
+Lint, test ve Supabase komutları T0.2–T0.4'te eklenecek.
