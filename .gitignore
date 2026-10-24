@@ -1,0 +1,50 @@
+# Bağımlılıklar
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Üretilen native klasörler (EAS / prebuild)
+ios/
+android/
+.kotlin/
+
+# Metro
+.metro-health-check*
+
+# Ortam değişkenleri (gerçek değerler asla repoya girmez)
+.env*.local
+
+# Supabase yerel durum
+supabase/.temp/
+supabase/.branches/
+
+# İmza / anahtar dosyaları
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+credentials.json
+
+# Lint ihlal örnekleri (T0.2, yalnızca yerel doğrulama)
+docs/lint-violations/
+
+# Test / derleme çıktıları
+coverage/
+*.tsbuildinfo
+
+# Loglar
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# İşletim sistemi / editör
+.DS_Store
+Thumbs.db
+.idea/

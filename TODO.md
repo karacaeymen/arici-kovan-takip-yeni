@@ -207,7 +207,7 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-24
 - **Tamamlanan**: — (sıfırdan başlangıç)
-- **Devam eden**: —
+- **Devam eden**: T0.1 (iskelet dosyaları oluşturuldu; Expo Go ile iOS/Android doğrulaması ve repo ayarları bekliyor)
 - **Sıradaki görev**: T0.1
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
