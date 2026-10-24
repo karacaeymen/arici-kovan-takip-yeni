@@ -206,9 +206,9 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-24
-- **Tamamlanan**: — (sıfırdan başlangıç)
-- **Devam eden**: T0.1 (iskelet dosyaları oluşturuldu; Expo Go ile iOS/Android doğrulaması ve repo ayarları bekliyor)
-- **Sıradaki görev**: T0.1
+- **Tamamlanan**: T0.1 (iskelet; Expo Go ile cihaz doğrulaması yapılacak)
+- **Devam eden**: T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged hazır)
+- **Sıradaki görev**: T0.3 (paralel), T0.4
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -257,7 +257,7 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 - **Dosyalar**: `eslint.config.js`, `.prettierrc`, `.husky/pre-commit`, `package.json` (`lint`, `format`, `prepare` script'leri), `docs/lint-violations/` (yalnızca doğrulama için, commit'lenmez)
 - **Bağımlılıklar**: T0.1
 - **Kabul Kriterleri**:
-  - [ ] Aşağıdaki her ihlal için örnek dosya lint hatası verir:
+  - [x] Aşağıdaki her ihlal için örnek dosya lint hatası verir:
     - `app/**` → servis, hook, repository veya bileşen importu (yalnızca Screen serbest)
     - Component → servis veya repository importu
     - Hook → repository veya `data/db` importu
@@ -265,8 +265,8 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
     - Backend `routes/**` → `repositories/**`, `providers/**` veya `_shared/db` importu
     - Backend `services/**` → `_shared/http` importu (`Request`/`Response` bağımlılığı)
     - `_shared/**` → herhangi bir fonksiyon klasöründen import
-  - [ ] §1.9 boyut sınırları aşıldığında lint hatası verir
-  - [ ] Commit öncesi lint + format otomatik çalışır; repo klonlandığında hook'lar `prepare` ile kurulur
+  - [x] §1.9 boyut sınırları aşıldığında lint hatası verir
+  - [x] Commit öncesi lint + format otomatik çalışır; repo klonlandığında hook'lar `prepare` ile kurulur
 
 ### Görev T0.3: Test altyapısı (frontend + backend)
 - **Açıklama**: Jest iki proje olarak kurulur: `unit` (saf Node; `src/domain`, `src/lib`, servisler, repository'ler) ve `ui` (`jest-expo` + React Native Testing Library; bileşen, Screen, hook). Edge Function'lar için `deno test` kurulur. `Clock` soyutlaması eklenir.
