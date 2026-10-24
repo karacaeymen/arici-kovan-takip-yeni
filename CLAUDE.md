@@ -31,7 +31,7 @@ Arıcı Kovan Takip — Expo Router (React Native, TypeScript strict) istemci + 
 | Repository | `data/db`, `domain` (tipler) |
 | API client | `data/supabase/client.ts`, `domain` (tipler) |
 
-Bu kurallar T0.2'de ESLint (`eslint-plugin-boundaries`, `max-lines`) ile zorlanacak.
+Bu kurallar `eslint.config.js` içinde `eslint-plugin-boundaries` (beyaz liste: izin verilmeyen her iç import hata verir) ve `max-lines` ile zorlanır. Yeni bir katman/klasör eklenirse önce oradaki `elements` ve `policies` listeleri güncellenir.
 
 ## Adlandırma
 - Frontend: `XScreen.tsx`, `PascalCase.tsx`, `useX.ts`, `XService.ts`, `XRepository.ts`, `kebab-case.client.ts`, domain `kebab-case.ts`.
@@ -53,5 +53,8 @@ Route 30 · backend `index.ts` 25 · backend `*.route.ts` 80 · Screen/Component
 npm install
 npm start          # Expo geliştirme sunucusu
 npm run typecheck  # tsc --noEmit
+npm run lint       # ESLint (katman + boyut kuralları)
+npm run lint:fix   # otomatik düzeltilebilenleri düzelt
+npm run format     # Prettier
 ```
-Lint, test ve Supabase komutları T0.2–T0.4'te eklenecek.
+Commit öncesinde husky + lint-staged değişen dosyalarda lint ve format'ı otomatik çalıştırır. Test ve Supabase komutları T0.3–T0.4'te eklenecek.
