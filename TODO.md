@@ -206,9 +206,9 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-24
-- **Tamamlanan**: T0.1 (iskelet; Expo Go ile cihaz doğrulaması yapılacak)
-- **Devam eden**: T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged hazır)
-- **Sıradaki görev**: T0.3 (paralel), T0.4
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged)
+- **Devam eden**: T0.3 (Jest unit/ui projeleri, Clock, deno test hazır)
+- **Sıradaki görev**: T0.4
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -273,11 +273,11 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 - **Dosyalar**: `jest.config.js`, `src/lib/clock.ts`, `src/lib/clock.test.ts`, `src/test-utils/render.tsx`, `supabase/functions/deno.json`, `supabase/functions/_shared/clock.ts`
 - **Bağımlılıklar**: T0.1
 - **Kabul Kriterleri**:
-  - [ ] Servisler mock bağımlılıklarla saf Node ortamında test edilebilir (örnek servis testi)
-  - [ ] Bileşen ve Screen'ler RNTL ile izole render edilip test edilebilir (örnek test)
-  - [ ] `Clock`, `systemClock` ve test için `createFixedClock` mevcut; servislere enjekte edilebilir
-  - [ ] Kapsam eşikleri: `src/domain` ≥ %90, servisler ≥ %80 satır; eşik altında `npm run test:coverage` hata verir
-  - [ ] `npm run test:functions` → `deno test` ile backend testlerini çalıştırır
+  - [x] Servisler mock bağımlılıklarla saf Node ortamında test edilebilir (örnek servis testi)
+  - [x] Bileşen ve Screen'ler RNTL ile izole render edilip test edilebilir (örnek test)
+  - [x] `Clock`, `systemClock` ve test için `createFixedClock` mevcut; servislere enjekte edilebilir
+  - [x] Kapsam eşikleri: `src/domain` ≥ %90, servisler ≥ %80 satır; eşik altında `npm run test:coverage` hata verir
+  - [x] `npm run test:functions` → `deno test` ile backend testlerini çalıştırır
 
 ### Görev T0.4: Supabase ortamları ve modüler Edge Function şablonu
 - **Açıklama**: Supabase yerel ortamı ve uzak `dev`/`prod` projeleri (Frankfurt, `eu-central-1`) kurulur. `_shared/` altyapısı ve şablon görevi gören `health` fonksiyonu §1.4 katmanlarıyla yazılır.
