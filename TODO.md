@@ -207,8 +207,8 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-25
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200)
-- **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı, build kutucukları onları bekliyor), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak)
-- **Sıradaki görev**: T0.6 (CI hattı)
+- **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
+- **Sıradaki görev**: T0.8 (tema, i18n, saha bileşenleri)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -304,13 +304,14 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T0.6: Modüler CI hattı
 - **Açıklama**: GitHub Actions iş akışları; her kontrol bağımsız bir job olarak koşar. `prod` ortamına deploy manuel onaya bağlıdır.
-- **Dosyalar**: `.github/workflows/ci.yml`, `.github/workflows/deploy-functions.yml`, `.github/pull_request_template.md`
+- **Dosyalar**: `.github/workflows/ci.yml`, `.github/workflows/deploy-functions.yml`, `.github/actions/setup/action.yml` (ortak Node kurulumu), `.github/pull_request_template.md`
+- **Not**: Branch protection, Environments (`dev`, `prod`) ve gizli değerler GitHub ayarlarından elle kurulur; adımlar `deploy-functions.yml` başındaki yorumda.
 - **Bağımlılıklar**: T0.2, T0.3, T0.4, T0.5
 - **Kabul Kriterleri**:
-  - [ ] Ayrı job'lar: `lint`, `typecheck`, `test-unit`, `test-ui`, `test-functions` (deno), `test-db` (pgTAP)
+  - [x] Ayrı job'lar: `lint`, `typecheck`, `test-unit`, `test-ui`, `test-functions` (deno), `test-db` (pgTAP)
   - [ ] Her job sonucu PR'da ayrı raporlanır; `main`'e merge için tümünün geçmesi zorunlu
   - [ ] GitHub Environments: `dev` (otomatik), `prod` (required reviewer)
-  - [ ] PR şablonunda "iOS'ta doğrulandı / Android'de doğrulandı / TODO.md güncellendi" kutucukları var
+  - [x] PR şablonunda "iOS'ta doğrulandı / Android'de doğrulandı / TODO.md güncellendi" kutucukları var
 
 ### Görev T0.7: Hata izleme ve modüler config yönetimi
 - **Açıklama**: Sentry React Native SDK'sı kurulur. Ortam değişkenleri tek bir doğrulanmış config modülünden okunur. Hatalar katmanına göre etiketlenir.

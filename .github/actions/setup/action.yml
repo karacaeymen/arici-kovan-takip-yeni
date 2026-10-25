@@ -1,0 +1,12 @@
+# Her job'ın ortak hazırlığı: Node kur, npm önbelleğini kullan, bağımlılıkları kur.
+name: Kurulum
+description: Node.js ve npm bağımlılıklarını kurar.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - run: npm ci --no-audit --no-fund
+      shell: bash

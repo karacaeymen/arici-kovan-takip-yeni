@@ -1,0 +1,66 @@
+# CI (TODO.md T0.6): her kontrol ayrı bir job'dır ve PR'da ayrı satır olarak görünür.
+# main'e merge için hepsinin geçmesi branch protection ile zorunlu tutulur.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Aynı dala yeni push gelince eski koşu iptal edilir.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run lint
+      - run: npm run format:check
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run typecheck
+
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run test:unit -- --ci
+
+  test-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run test:ui -- --ci
+
+  test-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      # Edge Function'ların Deno tip denetimi + testleri
+      - run: npx deno check --config supabase/functions/deno.json supabase/functions/*/index.ts
+      - run: npm run test:functions
+
+  test-db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      # Yalnızca Postgres başlatılır; migration'lar uygulanır, sonra pgTAP testleri koşar.
+      - run: npx supabase db start
+      - run: npx supabase test db
+      - if: always()
+        run: npx supabase stop --no-backup

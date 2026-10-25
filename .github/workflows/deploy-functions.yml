@@ -1,0 +1,61 @@
+# Supabase'e yükleme (TODO.md T0.6): main'e gelen migration ve Edge Function'lar
+# önce dev'e otomatik, sonra onaydan sonra prod'a yüklenir.
+#
+# GitHub'da bir kez kurulur (Settings → Environments):
+#   dev  : değişken SUPABASE_PROJECT_REF, gizli SUPABASE_DB_PASSWORD
+#   prod : aynıları + "Required reviewers" (onaylayan kişi)
+# Settings → Secrets and variables → Actions: gizli SUPABASE_ACCESS_TOKEN (supabase.com → Account → Access Tokens)
+name: Deploy Supabase
+
+on:
+  push:
+    branches: [main]
+    paths: ['supabase/**']
+  workflow_dispatch:
+
+# Aynı anda iki yükleme olmaz; sıradaki bekler.
+concurrency:
+  group: deploy-supabase
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Migration'ları uygula ve fonksiyonları yükle
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: |
+          npx supabase link --project-ref "$PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          npx supabase db push --linked --password "$SUPABASE_DB_PASSWORD"
+          npx supabase functions deploy --project-ref "$PROJECT_REF" --use-api
+      - name: Sağlık kontrolü
+        run: curl --fail --silent --show-error --retry 5 --retry-all-errors "https://${{ vars.SUPABASE_PROJECT_REF }}.supabase.co/functions/v1/health"
+
+  prod:
+    needs: dev
+    runs-on: ubuntu-latest
+    # prod ortamında "Required reviewers" açık olduğu için bu job onay bekler.
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Migration'ları uygula ve fonksiyonları yükle
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: |
+          npx supabase link --project-ref "$PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          npx supabase db push --linked --password "$SUPABASE_DB_PASSWORD"
+          npx supabase functions deploy --project-ref "$PROJECT_REF" --use-api
+      - name: Sağlık kontrolü
+        run: curl --fail --silent --show-error --retry 5 --retry-all-errors "https://${{ vars.SUPABASE_PROJECT_REF }}.supabase.co/functions/v1/health"
