@@ -9,6 +9,7 @@ const babelPresetExpo = require.resolve('babel-preset-expo', {
 const moduleNameMapper = { '^@/(.*)$': '<rootDir>/src/$1' };
 
 const UNIT_TESTS = [
+  '<rootDir>/app.config.test.ts',
   '<rootDir>/src/domain/**/*.test.ts',
   '<rootDir>/src/lib/**/*.test.ts',
   '<rootDir>/src/services/**/*.test.ts',
@@ -39,6 +40,8 @@ module.exports = {
       testEnvironment: 'node',
       testMatch: UNIT_TESTS,
       moduleNameMapper,
+      // babel-preset-expo, process.env.EXPO_PUBLIC_* okumalarını expo/virtual/env (ESM) modülüne çevirir.
+      transformIgnorePatterns: ['/node_modules/(?!expo/virtual/)'],
       transform: {
         '\\.[jt]sx?$': [
           'babel-jest',

@@ -33,9 +33,9 @@ Proje iki döneme ayrılır:
 | 2 | **T0.2** ESLint + katman import kuralları | ✅ |
 | 3 | **T0.3** Test altyapısı (Jest + deno test + `Clock`) | ✅ |
 | 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | ✅ |
-| 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | |
-| 6 | **T0.7** Sentry + config modülü | |
-| 7 | **T0.6** CI hattı | |
+| 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | 🔄 ayarlar hazır, hesaplar en sona |
+| 6 | **T0.7** Sentry + config modülü | 🔄 kod hazır, Sentry hesabı en sona |
+| 7 | **T0.6** CI hattı | ⏭️ sıradaki |
 | 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Arkadaş'ın tasarımından) | |
 | 9 | **T1.1** Domain varlıkları + zod şemaları | |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | |
