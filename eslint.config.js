@@ -198,9 +198,17 @@ module.exports = defineConfig([
     },
   },
   {
-    // Edge Function'lar Deno'da çalışır; npm:/jsr: importlarını Node çözücüsü bulamaz
+    // Edge Function'lar Deno'da çalışır; paketler deno.json'dan (npm:/jsr:) çözülür, Node çözücüsü
+    // bunları bulamaz ya da yanlış sürümü okur. Paket kontrolünü Deno'nun tip denetimi yapar.
     files: [`${FN}/**`, `${VIOLATIONS}/${FN}/**`],
-    rules: { 'import/no-unresolved': 'off' },
+    rules: {
+      'import/no-unresolved': 'off',
+      'import/namespace': 'off',
+      'import/named': 'off',
+      'import/default': 'off',
+      'import/no-named-as-default': 'off',
+      'import/no-named-as-default-member': 'off',
+    },
   },
   maxLines(['app/**/*.tsx'], 30),
   maxLines([`${FN}/*/index.ts`], 25),
