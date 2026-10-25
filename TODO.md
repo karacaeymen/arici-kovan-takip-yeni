@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-10-24
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged)
-- **Devam eden**: T0.3 (Jest unit/ui projeleri, Clock, deno test hazır)
-- **Sıradaki görev**: T0.4
+- **Son güncelleme**: 2026-10-25
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200)
+- **Devam eden**: —
+- **Sıradaki görev**: T0.5 (önce K2 kararı)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -281,16 +281,16 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T0.4: Supabase ortamları ve modüler Edge Function şablonu
 - **Açıklama**: Supabase yerel ortamı ve uzak `dev`/`prod` projeleri (Frankfurt, `eu-central-1`) kurulur. `_shared/` altyapısı ve şablon görevi gören `health` fonksiyonu §1.4 katmanlarıyla yazılır.
-- **Dosyalar**: `supabase/config.toml`, `supabase/migrations/<zaman>_base_extensions.sql`, `supabase/tests/database/base_extensions_test.sql`, `supabase/functions/_shared/http/{router,response,errors,cors}.ts`, `_shared/validation/parse.ts`, `_shared/db/client.ts`, `_shared/config.ts`, `_shared/observability/logger.ts`, `supabase/functions/health/index.ts`, `health/routes/health.route.ts`, `health/services/health.service.ts`, `health/tests/health.service.test.ts`, `health/tests/health.route.test.ts`, `.env.example`
+- **Dosyalar**: `supabase/config.toml`, `supabase/migrations/<zaman>_base_extensions.sql`, `supabase/tests/database/base_extensions_test.sql`, `supabase/functions/_shared/http/{router,response,errors,cors}.ts`, `_shared/validation/parse.ts`, `_shared/db/client.ts`, `_shared/config.ts`, `_shared/observability/logger.ts`, `supabase/functions/health/index.ts`, `health/routes/health.route.ts`, `health/services/health.service.ts`, `health/repositories/health.repository.ts`, `supabase/migrations/<zaman>_health_ping.sql` (veritabanı ping fonksiyonu), `health/tests/health.service.test.ts`, `health/tests/health.route.test.ts`, `.env.example`
 - **Bağımlılıklar**: T0.1, T0.3
 - **Kabul Kriterleri**:
-  - [ ] `health/index.ts` yalnızca router kurar ve `health.route.ts`'yi kaydeder
-  - [ ] `health.route.ts` iş mantığı içermez; `health.service.ts`'yi çağırır ve yanıtı `_shared/http/response.ts` ile döner
-  - [ ] Servis testi (mock `Clock`/DB ping) ve route testi (stub servis) `deno test` ile geçer
-  - [ ] Hatalar `_shared/http/errors.ts` ile tutarlı JSON biçiminde döner
-  - [ ] pgTAP testleri ve gerekli eklentiler etkin; `npm run db:start|db:stop|db:reset|db:test` çalışır
-  - [ ] Yerel, `dev` ve `prod`'da `GET /health` HTTP 200 döner
-  - [ ] Bağlantı bilgileri yalnızca git'e girmeyen `.env.local` içinde; repoda değersiz `.env.example`
+  - [x] `health/index.ts` yalnızca router kurar ve `health.route.ts`'yi kaydeder
+  - [x] `health.route.ts` iş mantığı içermez; `health.service.ts`'yi çağırır ve yanıtı `_shared/http/response.ts` ile döner
+  - [x] Servis testi (mock `Clock`/DB ping) ve route testi (stub servis) `deno test` ile geçer
+  - [x] Hatalar `_shared/http/errors.ts` ile tutarlı JSON biçiminde döner
+  - [x] pgTAP testleri ve gerekli eklentiler etkin; `npm run db:start|db:stop|db:reset|db:test` çalışır
+  - [x] Yerel, `dev` ve `prod`'da `GET /health` HTTP 200 döner
+  - [x] Bağlantı bilgileri yalnızca git'e girmeyen `.env.local` içinde; repoda değersiz `.env.example`
 
 ### Görev T0.5: EAS yapılandırması ve mağaza hesapları
 - **Açıklama**: `eas.json` içinde `development`, `preview` ve `production` profilleri tanımlanır. Ortama göre değişen ayarlar `app.config.ts` içinde okunur.

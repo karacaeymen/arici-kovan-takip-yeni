@@ -46,6 +46,7 @@ Route 30 · backend `index.ts` 25 · backend `*.route.ts` 80 · Screen/Component
 - Kullanıcıya görünen metinler `src/i18n/tr.json`'dan okunur (T0.8 sonrası); sabit Türkçe metin yazılmaz.
 - Zaman gerektiren kod `new Date()` yerine `Clock` kullanır (`src/lib/clock.ts`, backend'de `_shared/clock.ts`); testlerde `createFixedClock` ile zaman sabitlenir.
 - Ekran/bileşen testleri `@/test-utils/render` içindeki `renderWithProviders` ile yazılır; `app/**` altına test dosyası konmaz (Expo Router her dosyayı rota sayar).
+- Yeni bir Edge Function `health` şablonunu izler: `index.ts` → `routes/*.route.ts` → `services/*.service.ts` → `repositories/` / `providers/`. Veritabanı değişikliği her zaman yeni bir `supabase/migrations/<zaman>_<ad>.sql` dosyasıdır; eski migration düzenlenmez.
 - Gizli değerler yalnızca `.env.local` / EAS secrets'ta; repoda yalnızca değersiz `.env.example`.
 - Satır sonları LF (`.gitattributes`).
 
@@ -62,5 +63,13 @@ npm run test:unit  # saf Node testleri: domain, lib, servisler, repository'ler
 npm run test:ui    # bileşen, Screen ve hook testleri (React Native Testing Library)
 npm run test:coverage   # kapsam raporu; domain < %90 veya servisler < %80 ise hata
 npm run test:functions  # Edge Function testleri (deno test)
+npm run db:start   # yerel Supabase'i başlat (Docker Desktop açık olmalı)
+npm run db:stop    # yerel Supabase'i durdur
+npm run db:reset   # yerel veritabanını sıfırla, migration'ları baştan uygula
+npm run db:test    # veritabanı testleri (pgTAP, supabase/tests/database)
+# Uzak ortama yükleme (klasör varsayılan olarak dev'e bağlıdır; prod için önce link ile prod'a geç, sonra dev'e dön):
+# npx supabase link --project-ref <ref>   # dev: uakawqlztstbmmyimmjy · prod: cnmycgkyofuyucscjxwm
+# npx supabase db push --linked && npx supabase functions deploy <ad>
+npm run functions:serve  # Edge Function'ları yerelde çalıştır
 ```
-Commit öncesinde husky + lint-staged değişen dosyalarda lint ve format'ı otomatik çalıştırır. Supabase komutları T0.4'te eklenecek.
+Commit öncesinde husky + lint-staged değişen dosyalarda lint ve format'ı otomatik çalıştırır.

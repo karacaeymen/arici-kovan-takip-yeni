@@ -17,7 +17,12 @@
     "test:unit": "jest --selectProjects unit",
     "test:ui": "jest --selectProjects ui",
     "test:coverage": "jest --coverage",
-    "test:functions": "deno test --config supabase/functions/deno.json --allow-env supabase/functions"
+    "test:functions": "deno test --config supabase/functions/deno.json --allow-env supabase/functions",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "functions:serve": "supabase functions serve"
   },
   "dependencies": {
     "expo": "~58.0.19",
@@ -45,6 +50,7 @@
     "jest-expo": "~58.0.12",
     "lint-staged": "^16.4.0",
     "prettier": "^3.9.10",
+    "supabase": "^2.122.0",
     "test-renderer": "^1.3.1",
     "typescript": "~6.0.3"
   },

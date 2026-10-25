@@ -32,7 +32,7 @@ Proje iki döneme ayrılır:
 | 1 | **T0.1** Expo iskeleti ve repo | ✅ |
 | 2 | **T0.2** ESLint + katman import kuralları | ✅ |
 | 3 | **T0.3** Test altyapısı (Jest + deno test + `Clock`) | ✅ |
-| 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | ⏭️ sıradaki |
+| 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | ✅ |
 | 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | |
 | 6 | **T0.7** Sentry + config modülü | |
 | 7 | **T0.6** CI hattı | |
