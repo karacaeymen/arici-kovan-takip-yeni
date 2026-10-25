@@ -1,6 +1,8 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
+import { createLogger } from '../observability/logger.ts';
+
 /** Uygulamanın bilinen hataları. Route ve servisler bunu fırlatır; HTTP yanıtına burada çevrilir. */
 export class AppError extends Error {
   constructor(
@@ -33,14 +35,11 @@ export function toErrorResponse(err: unknown, c: Context): Response {
     if (err.details !== undefined) body.error.details = err.details;
     return c.json(body, err.status);
   }
-  console.error(
-    JSON.stringify({
-      level: 'error',
-      msg: 'unhandled_error',
-      path: c.req.path,
-      error: err instanceof Error ? err.message : String(err),
-    }),
-  );
+  // Yol `/<fonksiyon>/...` biçimindedir (createRouter basePath'i).
+  const fn = c.req.path.split('/')[1] || 'unknown';
+  createLogger({ function: fn, route: `${c.req.method} ${c.req.path}` }).error('unhandled_error', {
+    error: err,
+  });
   const body: ErrorBody = {
     error: { code: 'internal_error', message: 'Beklenmeyen bir hata oluştu.' },
   };

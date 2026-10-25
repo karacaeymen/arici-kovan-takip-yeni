@@ -207,8 +207,8 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-25
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200)
-- **Devam eden**: —
-- **Sıradaki görev**: T0.5 (önce K2 kararı)
+- **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı, build kutucukları onları bekliyor), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak)
+- **Sıradaki görev**: T0.6 (CI hattı)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -294,7 +294,8 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T0.5: EAS yapılandırması ve mağaza hesapları
 - **Açıklama**: `eas.json` içinde `development`, `preview` ve `production` profilleri tanımlanır. Ortama göre değişen ayarlar `app.config.ts` içinde okunur.
-- **Dosyalar**: `eas.json`, `app.config.ts`
+- **Dosyalar**: `eas.json`, `app.config.ts` (`app.json`'ın yerini alır), `app.config.test.ts`, `jest.config.js` (testi unit projesine ekler), `package.json` (`expo-dev-client`), `.env.example`
+- **Not**: Uygulama kimliği K2 kapanana kadar geçicidir (`app.config.ts` → `BASE_APP_ID`); kimlik yayından sonra değiştirilemez.
 - **Bağımlılıklar**: T0.1, K2
 - **Kabul Kriterleri**:
   - [ ] Üç profil için EAS Build başarılı
@@ -313,13 +314,14 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T0.7: Hata izleme ve modüler config yönetimi
 - **Açıklama**: Sentry React Native SDK'sı kurulur. Ortam değişkenleri tek bir doğrulanmış config modülünden okunur. Hatalar katmanına göre etiketlenir.
-- **Dosyalar**: `src/lib/config.ts`, `src/lib/observability/sentry.ts`, `src/lib/observability/withServiceErrors.ts`, `src/components/ui/ErrorBoundary/ErrorBoundary.tsx`, `supabase/functions/_shared/observability/logger.ts` (genişletme)
+- **Dosyalar**: `src/lib/config.ts`, `src/lib/observability/report.ts` (Sentry'den bağımsız bildirim sözleşmesi), `src/lib/observability/sentry.ts`, `src/lib/observability/withServiceErrors.ts`, `src/components/ui/ErrorBoundary/ErrorBoundary.tsx`, `app/_layout.tsx`, `app/(auth)/_layout.tsx`, `app/(tabs)/_layout.tsx`, `eslint.config.js` (rota → ErrorBoundary/observability istisnası), `jest.config.js`, `package.json` (`zod`, `@sentry/react-native`), `.env.example`, `supabase/functions/_shared/observability/logger.ts` (genişletme), `_shared/http/errors.ts`, `_shared/tests/logger.test.ts`
+- **Not**: Kaynak haritası (source map) yükleme için `@sentry/react-native/expo` eklentisi Sentry hesabı açılınca (T7.8) `app.config.ts`'e eklenir.
 - **Bağımlılıklar**: T0.5
 - **Kabul Kriterleri**:
-  - [ ] `config.ts` ortam değişkenlerini zod ile doğrular; eksik değerde açılışta anlaşılır hata verir
-  - [ ] Sentry'de `layer` etiketi (`screen` / `service` / `repository`) ve `feature` etiketi ile filtreleme yapılabilir
-  - [ ] Her rota grubu `ErrorBoundary` ile sarılı
-  - [ ] Backend log'ları `function` ve `route` alanlarıyla yapılandırılmış JSON olarak yazılır
+  - [x] `config.ts` ortam değişkenlerini zod ile doğrular; eksik değerde açılışta anlaşılır hata verir
+  - [ ] Sentry'de `layer` etiketi (`screen` / `service` / `repository`) ve `feature` etiketi ile filtreleme yapılabilir (kod ve testler hazır; Sentry hesabı/DSN ile doğrulanacak)
+  - [x] Her rota grubu `ErrorBoundary` ile sarılı
+  - [x] Backend log'ları `function` ve `route` alanlarıyla yapılandırılmış JSON olarak yazılır
 
 ### Görev T0.8: Tasarım temeli, i18n ve ayrık saha bileşenleri
 - **Açıklama**: Tema, i18n ve her biri kendi klasöründe duran saha modu bileşenleri oluşturulur.

@@ -23,7 +23,7 @@ Arıcı Kovan Takip — Expo Router (React Native, TypeScript strict) istemci + 
 ### Frontend import yönü
 | Katman | Import edebileceği |
 |---|---|
-| Route `app/**` | yalnızca `src/features/*/screens` |
+| Route `app/**` | yalnızca `src/features/*/screens` (istisna: `_layout.tsx` → `components/ui/ErrorBoundary`, `lib/observability`) |
 | Screen | aynı feature'ın `components`, `hooks`; `components/ui`; `theme`; `i18n` |
 | Component | `components/ui`, `theme`, `i18n`, `lib/format` |
 | Hook | `services`, `domain` (tipler) |
@@ -47,6 +47,8 @@ Route 30 · backend `index.ts` 25 · backend `*.route.ts` 80 · Screen/Component
 - Zaman gerektiren kod `new Date()` yerine `Clock` kullanır (`src/lib/clock.ts`, backend'de `_shared/clock.ts`); testlerde `createFixedClock` ile zaman sabitlenir.
 - Ekran/bileşen testleri `@/test-utils/render` içindeki `renderWithProviders` ile yazılır; `app/**` altına test dosyası konmaz (Expo Router her dosyayı rota sayar).
 - Yeni bir Edge Function `health` şablonunu izler: `index.ts` → `routes/*.route.ts` → `services/*.service.ts` → `repositories/` / `providers/`. Veritabanı değişikliği her zaman yeni bir `supabase/migrations/<zaman>_<ad>.sql` dosyasıdır; eski migration düzenlenmez.
+- Ortam değişkenleri yalnızca `getConfig()` (`src/lib/config.ts`) üzerinden okunur; `process.env` başka yerde kullanılmaz.
+- Servisler `withServiceErrors(servis, { feature })` ile sarılır; hata Sentry'ye `layer`/`feature`/`operation` etiketiyle gider. Doğrudan Sentry import edilmez, `reportError` kullanılır.
 - Gizli değerler yalnızca `.env.local` / EAS secrets'ta; repoda yalnızca değersiz `.env.example`.
 - Satır sonları LF (`.gitattributes`).
 

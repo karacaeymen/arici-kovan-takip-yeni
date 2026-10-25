@@ -51,7 +51,16 @@ const shared = (...paths) => is('shared', { fileInternalPath: paths });
 
 const policies = [
   // Frontend (§1.2)
-  { from: is('route'), allow: to(is('screen')) },
+  {
+    // Rota yalnızca Screen render eder. İstisna (T0.7): _layout dosyaları hata ekranını ve
+    // hata izlemeyi bağlar.
+    from: is('route'),
+    allow: to(
+      is('screen'),
+      is('ui', { fileInternalPath: 'ErrorBoundary/**' }),
+      is('lib', { fileInternalPath: 'observability/**' }),
+    ),
+  },
   {
     from: is('screen'),
     allow: to(
@@ -189,8 +198,11 @@ module.exports = defineConfig([
                 'expo',
                 'expo-*',
                 '@expo/*',
+                '@sentry/*',
+                '@/lib/observability/*',
               ],
-              message: 'src/domain saf kalmalı: React, React Native ve Expo import edilemez.',
+              message:
+                'src/domain saf kalmalı: React, React Native, Expo ve hata izleme import edilemez.',
             },
           ],
         },
