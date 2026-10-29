@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-10-25
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200)
+- **Son güncelleme**: 2026-10-29
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez)
 - **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
-- **Sıradaki görev**: T0.8 (tema, i18n, saha bileşenleri)
+- **Sıradaki görev**: T0.8 (ChatGPT: tema, i18n, saha bileşenleri) ve T1.2 (Claude: Supabase şeması + `sync`)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -340,12 +340,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.1: Domain varlıkları ve modüler zod şemaları
 - **Açıklama**: Her varlık ve zod şeması ayrı dosyadadır. Ortak değer nesneleri (ID, zaman damgası, senkron meta alanları) ayrı tutulur.
-- **Dosyalar**: `src/domain/shared/{ids,timestamps,sync-meta}.ts`, `src/domain/entities/{business,apiary,hive,queen,inspection,treatment,feeding,harvest,relocation,task}.ts`, `src/domain/entities/index.ts`, her biri için `<varlık>.test.ts`
+- **Dosyalar**: `src/domain/shared/{ids,timestamps,sync-meta,text}.ts`, `src/domain/entities/{business,apiary,hive,queen,inspection,treatment,feeding,harvest,relocation,task}.ts`, `src/domain/entities/index.ts`, her biri için `<varlık>.test.ts`, `src/test-utils/domain-fixtures.ts` (test örnek verileri)
+- **Not**: Her varlık iki şema verir: `<varlık>Fields` (düz nesne; servisler `.omit()`/`.pick()` ile girdi şeması türetir) ve `<varlık>Schema` (alanlar arası kurallar eklenmiş tam doğrulama). Zaman damgaları saat dilimli ISO metni, takvim günleri `YYYY-MM-DD`; silme `deletedAt` ile yapılır.
 - **Bağımlılıklar**: T0.3
 - **Kabul Kriterleri**:
-  - [ ] Her varlık kendi dosyasında; tip `z.infer` ile şemadan türetilir
-  - [ ] Her şemanın geçerli/geçersiz örneklerle ayrı test dosyası var
-  - [ ] `src/domain` içinde UI veya veri katmanı importu yok (lint geçer)
+  - [x] Her varlık kendi dosyasında; tip `z.infer` ile şemadan türetilir
+  - [x] Her şemanın geçerli/geçersiz örneklerle ayrı test dosyası var
+  - [x] `src/domain` içinde UI veya veri katmanı importu yok (lint geçer)
 
 ### Görev T1.2: Supabase şeması ve `sync` Edge Function'ı
 - **Açıklama**: Tablolar ayrı migration dosyalarında oluşturulur. LWW birleştirmesi atomik olsun diye SQL fonksiyonlarında (`sync_apply_changes`, `sync_changes_since`) yapılır; istemci bunlara `sync` Edge Function'ının iki route'u üzerinden ulaşır.

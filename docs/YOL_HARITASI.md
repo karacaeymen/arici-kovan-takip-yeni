@@ -39,7 +39,7 @@ Dönem A'nın kodunu Eymen, **Claude** ve **ChatGPT**'yi aynı anda çalıştır
 | 6 | **T0.7** Sentry + config modülü | Eymen (elle) | 🔄 kod hazır, Sentry hesabı en sona |
 | 7 | **T0.6** CI hattı | Eymen (elle) | 🔄 iş akışları hazır, GitHub ayarları bekliyor |
 | 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Arkadaş'ın tasarımından) | ChatGPT | ⏭️ sıradaki |
-| 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ⏭️ sıradaki |
+| 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ✅ |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | |
 | 11 | **T1.3** RLS politikaları | Claude | |
 | 12 | **T1.4** Yerel SQLite şeması (Drizzle) | ChatGPT | |
