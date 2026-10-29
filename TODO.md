@@ -206,9 +206,9 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ## Güncel Durum (her görev sonunda güncellenir)
 - **Son güncelleme**: 2026-10-29
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez)
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te)
 - **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
-- **Sıradaki görev**: T0.8 (ChatGPT: tema, i18n, saha bileşenleri) ve T1.2 (Claude: Supabase şeması + `sync`)
+- **Sıradaki görev**: T0.8 / T1.4 (ChatGPT) ve T1.3 (Claude: RLS politikaları)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -350,12 +350,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.2: Supabase şeması ve `sync` Edge Function'ı
 - **Açıklama**: Tablolar ayrı migration dosyalarında oluşturulur. LWW birleştirmesi atomik olsun diye SQL fonksiyonlarında (`sync_apply_changes`, `sync_changes_since`) yapılır; istemci bunlara `sync` Edge Function'ının iki route'u üzerinden ulaşır.
-- **Dosyalar**: `supabase/migrations/<zaman>_create_<tablo>.sql` (tablo başına), `<zaman>_sync_functions.sql`, `supabase/tests/database/sync_test.sql`, `supabase/functions/sync/index.ts`, `sync/routes/push.route.ts`, `sync/routes/pull.route.ts`, `sync/services/sync-push.service.ts`, `sync/services/sync-pull.service.ts`, `sync/repositories/sync.repository.ts`, `sync/tests/*.test.ts`
+- **Dosyalar**: `supabase/migrations/<zaman>_sync_base.sql` (ortak `sync_seq` sırası ve tetikleyici), `supabase/migrations/<zaman>_create_<tablo>.sql` (tablo başına), `<zaman>_sync_functions.sql`, `supabase/tests/database/sync_test.sql`, `supabase/functions/sync/index.ts`, `sync/routes/push.route.ts`, `sync/routes/pull.route.ts`, `sync/services/sync-push.service.ts`, `sync/services/sync-pull.service.ts`, `sync/services/sync-protocol.ts` (protokol sürümü, tablo listesi, alan adı dönüşümü), `sync/repositories/sync.repository.ts`, `sync/tests/*.test.ts`, `supabase/functions/_shared/auth/require-user.ts` + `_shared/tests/{require-user.test,fake-jwt}.ts`, `supabase/config.toml` (`[functions.sync] verify_jwt = true`)
+- **Not**: Tablolar RLS açık ve politikasız oluşturulur; T1.3'e kadar kullanıcılar hiçbir satırı okuyamaz/yazamaz (push `forbidden` döner). Pull imleci global `sync_seq`'tir; yazmalar işletme başına kilit aldığından numara sırası commit sırasıyla aynıdır. Cihaz saati sunucudan 10 dakikadan fazla ilerideyse satır `clock_skew` ile reddedilir.
 - **Bağımlılıklar**: T0.4, T1.1
 - **Kabul Kriterleri**:
-  - [ ] `POST /sync/push` ve `GET /sync/pull` ayrı route dosyalarındadır; ikisi de girdiyi zod ile doğrular
-  - [ ] Parti bölme, sürüm kontrolü ve hata eşleme servistedir; SQL çağrısı yalnızca `sync.repository.ts`'dedir
-  - [ ] LWW mantığı pgTAP ile; servisler ve route'lar `deno test` ile test edilmiştir
+  - [x] `POST /sync/push` ve `GET /sync/pull` ayrı route dosyalarındadır; ikisi de girdiyi zod ile doğrular
+  - [x] Parti bölme, sürüm kontrolü ve hata eşleme servistedir; SQL çağrısı yalnızca `sync.repository.ts`'dedir
+  - [x] LWW mantığı pgTAP ile; servisler ve route'lar `deno test` ile test edilmiştir
 
 ### Görev T1.3: RLS politikaları
 - **Açıklama**: Her tablo için işletme bazlı politikalar ayrı migration dosyalarında yazılır. Kullanıcı istekleri Edge Function'larda kullanıcı JWT'li istemciyle yürütülür (service-role değil).
