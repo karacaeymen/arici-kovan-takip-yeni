@@ -4,7 +4,7 @@
 >
 > Ekip: **Eymen** ve **Arkadaş** (adı netleşince bu belgede değiştirilecek).
 >
-> Son güncelleme: 2026-10-24. İş bölümü "temeli Eymen atar, özellikleri sonra birlikte ekleriz" modeline çevrildi.
+> Son güncelleme: 2026-10-29. Dönem A kodu Claude ve ChatGPT arasında paylaştırıldı (§2.4). Önceki not (2026-10-24): İş bölümü "temeli Eymen atar, özellikleri sonra birlikte ekleriz" modeline çevrildi.
 
 ---
 
@@ -15,7 +15,7 @@ Proje iki döneme ayrılır:
 | | **Dönem A — Temel** | **Dönem B — Özellik geliştirme** |
 |---|---|---|
 | Ne yapılır | İskelet, kurallar, test, sunucu, veritabanı, senkron, giriş: uygulamanın "tesisatı" | Arıcının gördüğü ekranlar ve özellikler, tasarım, sesler |
-| Kod kimde | **Yalnızca Eymen** | Ekran/özellik işleri **Arkadaş** (Claude ile, "vibe coding"); sunucu ve altyapı işleri **Eymen** |
+| Kod kimde | **Eymen** (Claude ve ChatGPT ile paralel, §2.4) | Ekran/özellik işleri **Arkadaş** (Claude ile, "vibe coding"); sunucu ve altyapı işleri **Eymen** |
 | Arkadaş ne yapar | Kod yazmaz; tasarım, ses ve içerik hazırlığı yapar (bkz. §2.2) | Hazır temelin üstüne özellik ekler |
 | Bitiş ölçütü | Dönem A kilometre taşı (§2.3) | Mağazada yayın |
 
@@ -27,27 +27,30 @@ Proje iki döneme ayrılır:
 
 ### 2.1 Eymen'in sırası
 
-| Sıra | Görev | Durum |
-|---|---|---|
-| 1 | **T0.1** Expo iskeleti ve repo | ✅ |
-| 2 | **T0.2** ESLint + katman import kuralları | ✅ |
-| 3 | **T0.3** Test altyapısı (Jest + deno test + `Clock`) | ✅ |
-| 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | ✅ |
-| 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | 🔄 ayarlar hazır, hesaplar en sona |
-| 6 | **T0.7** Sentry + config modülü | 🔄 kod hazır, Sentry hesabı en sona |
-| 7 | **T0.6** CI hattı | 🔄 iş akışları hazır, GitHub ayarları bekliyor |
-| 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Arkadaş'ın tasarımından) | ⏭️ sıradaki |
-| 9 | **T1.1** Domain varlıkları + zod şemaları | |
-| 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | |
-| 11 | **T1.3** RLS politikaları | |
-| 12 | **T1.4** Yerel SQLite şeması (Drizzle) | |
-| 13 | **T1.5** Repository katmanı | |
-| 14 | **T1.6** İstemci senkron motoru | |
-| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | |
-| 16 | **T1.9** Ayarlar + senkron durum ekranı | |
-| 17 | **T1.8** Onboarding | |
-| 18 | **T4.1** Referans içerik servisi | |
-| 19 | **T2.2** Arılık yönetimi — **örnek özellik**: Dönem B'de her yeni özellik buna bakılarak yazılır | |
+Dönem A'nın kodunu Eymen, **Claude** ve **ChatGPT**'yi aynı anda çalıştırarak yazar. Ayrıntılı paylaşım §2.4'te.
+
+| Sıra | Görev | Yapan | Durum |
+|---|---|---|---|
+| 1 | **T0.1** Expo iskeleti ve repo | Eymen | ✅ |
+| 2 | **T0.2** ESLint + katman import kuralları | Eymen | ✅ |
+| 3 | **T0.3** Test altyapısı (Jest + deno test + `Clock`) | Eymen | ✅ |
+| 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | Eymen | ✅ |
+| 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | Eymen (elle) | 🔄 ayarlar hazır, hesaplar en sona |
+| 6 | **T0.7** Sentry + config modülü | Eymen (elle) | 🔄 kod hazır, Sentry hesabı en sona |
+| 7 | **T0.6** CI hattı | Eymen (elle) | 🔄 iş akışları hazır, GitHub ayarları bekliyor |
+| 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Arkadaş'ın tasarımından) | ChatGPT | ⏭️ sıradaki |
+| 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ⏭️ sıradaki |
+| 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | |
+| 11 | **T1.3** RLS politikaları | Claude | |
+| 12 | **T1.4** Yerel SQLite şeması (Drizzle) | ChatGPT | |
+| 13 | **T1.5** Repository katmanı | ChatGPT | |
+| 14 | **T1.6** İstemci senkron motoru | Claude | |
+| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | ChatGPT | |
+| 16 | **T1.9** Ayarlar + senkron durum ekranı | ChatGPT | |
+| 17 | **T1.8** Onboarding | ChatGPT | |
+| 18 | **T4.1** Referans içerik servisi | Claude | |
+| 19 | **T2.1** Konum izni servisi *(T2.2 buna bağlı olduğu için Dönem A'ya alındı)* | Claude | |
+| 20 | **T2.2** Arılık yönetimi — **örnek özellik**: Dönem B'de her yeni özellik buna bakılarak yazılır | Claude | |
 
 ### 2.2 Arkadaş bu sırada (kod yazmadan)
 
@@ -66,13 +69,37 @@ Proje iki döneme ayrılır:
 - Telefonla giriş + onboarding çalışıyor; uçak modunda yazılan kayıt ağ gelince sunucuya gidiyor; başka işletmenin verisi görünmüyor.
 - Arılık özelliği (T2.2) uçtan uca çalışıyor ve Dönem B için örnek görevi görüyor.
 
+### 2.4 Dönem A'da Claude ve ChatGPT paylaşımı
+
+**Şeritler:**
+- **Claude — sunucu ve veri sözleşmesi:** domain varlıkları, Supabase şeması, RLS, `sync` ve `reference-content` fonksiyonları, istemci senkron motoru, örnek özellik (arılık).
+- **ChatGPT — uygulama içi temel:** tema ve saha bileşenleri, yerel SQLite, repository'ler, giriş, ayarlar ve onboarding ekranları.
+- **Eymen:** iki şeridi başlatır, PR'ları inceleyip merge eder, cihazda (iOS/Android) doğrular, hesap/ayar işlerini (T0.5, T0.6, T0.7) elle yapar.
+
+**Turlar** (aynı satırdaki iki iş aynı anda yürür; bir sonraki tura geçmeden o turun PR'ları `main`'e merge edilir):
+
+| Tur | Claude | ChatGPT | Tur sonunda gereken |
+|---|---|---|---|
+| 1 | **T1.1** Domain varlıkları | **T0.8** Tema + bileşenler | T1.1 merge edilmeden ChatGPT T1.4'e geçemez |
+| 2 | **T1.2** Supabase şeması + `sync`, ardından **T1.3** RLS | **T1.4** SQLite, ardından **T1.5** repository'ler | T1.5 merge edilmeden Claude T1.6'ya geçemez |
+| 3 | **T1.6** Senkron motoru | **T1.7** Giriş (telefon + OTP) | T1.6 + T1.7 merge edilmeden onboarding başlamaz |
+| 4 | **T4.1** Referans içerik | **T1.9** Ayarlar/senkron ekranı, ardından **T1.8** Onboarding | T1.8 merge edilmeden T2.1 başlamaz |
+| 5 | **T2.1** Konum, ardından **T2.2** Arılık (örnek özellik) | Dönem A'dan kalan düzeltmeler, Dönem B hazırlığı | Dönem A kilometre taşı (§2.3) |
+
+**Çakışmayı önleme kuralları:**
+1. **Dosya sahipliği:** `src/domain/**` ve `supabase/**` Claude'un; `src/theme/**`, `src/components/ui/**`, `src/i18n/**`, `src/data/db/**`, `src/data/repositories/**` ChatGPT'nin. Diğerinin alanında değişiklik gerekiyorsa küçük tutulur ve PR açıklamasında belirtilir.
+2. **Ortak dosyalar** (`package.json`, `package-lock.json`, `TODO.md`, `docs/YOL_HARITASI.md`, `src/i18n/tr.json`): PR açmadan önce güncel `main` alınır; çakışma çıkarsa PR'ı açan taraf çözer, diğerinin satırlarını silmez.
+3. **Bağımlılık eklemek:** Her iki taraf da yalnızca kendi görevinin gerektirdiği paketi ekler (`npx expo install <paket>`).
+4. **Dal adı:** `claude/t<faz>.<sıra>-kisa-ad` ve `chatgpt/t<faz>.<sıra>-kisa-ad`. Bir görev = bir PR; `main`'e doğrudan push yok.
+5. **Durum:** Görevi bitiren, aynı PR'da `TODO.md` → Güncel Durum ve bu belgedeki §2.1 tablosunu günceller.
+
 ---
 
 ## 3. Dönem B — Özellik geliştirme
 
 | Aşama | Arkadaş (ekran ve özellik) | Eymen (sunucu, altyapı, inceleme) |
 |---|---|---|
-| **3 — Arılık ve kovan (Faz 2)** | T2.1 Konum izni, T2.3 Kovan oluşturma, T2.4 Kovan listesi, T2.5 Kraliçe takibi, T2.6 Kovan taşıma, T2.7 QR etiket PDF, T2.8 QR tarayıcı | T4.2 İlk içerik seed'leri (Arkadaş'ın derlediği tablolardan), T5.1 `weather-forecast` fonksiyonu |
+| **3 — Arılık ve kovan (Faz 2)** | T2.3 Kovan oluşturma, T2.4 Kovan listesi, T2.5 Kraliçe takibi, T2.6 Kovan taşıma, T2.7 QR etiket PDF, T2.8 QR tarayıcı | T4.2 İlk içerik seed'leri (Arkadaş'ın derlediği tablolardan), T5.1 `weather-forecast` fonksiyonu |
 | **4 — Saha denetimi (Faz 3)** | T3.1 Denetim formu, T3.2 Toplu denetim, T3.3 İlaçlama, T3.4 Besleme, T3.5 Bal sağımı, T3.6 Kovan detayı, T3.7 Arılık özet paneli | T4.4 Kural motoru çekirdeği |
 | **5 — Takvim (Faz 4)** | T4.7 Takvim ekranları, T4.8 Sorumluluk reddi | T4.5 13 MVP kuralı, T4.6 Görev üretim servisi, T4.3 İçerik geri bildirimi |
 | **6 — Hava ve bildirim (Faz 5)** | T5.2 Hava kartı ve ekranı, T5.4 Bildirim ayarları | T5.3 Hava sinyalleri, T5.5 Push token servisi, T5.6 `weather-alerts` cron, T5.7 Arka plan görevleri |
