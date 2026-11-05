@@ -21,6 +21,7 @@ Gereksinim: Node.js 20+ ve telefonda Expo Go.
 - [`CLAUDE.md`](./CLAUDE.md) — mimari kurallar ve çalışma düzeni (önce bunu okuyun)
 - [`TODO.md`](./TODO.md) — görev listesi, katman kuralları, endpoint ve ekran haritaları
 - [`docs/YOL_HARITASI.md`](./docs/YOL_HARITASI.md) — aşamalar ve iki kişilik iş bölümü
+- [`docs/FARUK_BASLANGIC.md`](./docs/FARUK_BASLANGIC.md) — Faruk için başlangıç: kurulum, kurallar, durum ve görevler (T0.8, T1.4, T1.5)
 
 ## Klasör yapısı (özet)
 
