@@ -42,7 +42,7 @@ Dönem A'nın kodunu Eymen, **Claude** ve **ChatGPT**'yi aynı anda çalıştır
 | 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ✅ |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | |
 | 11 | **T1.3** RLS politikaları | Claude | |
-| 12 | **T1.4** Yerel SQLite şeması (Drizzle) | ChatGPT | |
+| 12 | **T1.4** Yerel SQLite şeması (Drizzle) | Faruk | 🔄 kod hazır, PR ve cihaz doğrulaması bekliyor |
 | 13 | **T1.5** Repository katmanı | ChatGPT | |
 | 14 | **T1.6** İstemci senkron motoru | Claude | |
 | 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | ChatGPT | |

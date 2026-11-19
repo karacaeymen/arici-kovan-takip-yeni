@@ -7,3 +7,4 @@ android/
 package-lock.json
 *.md
 docs/lint-violations/
+drizzle/

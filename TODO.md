@@ -205,9 +205,9 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-10-29
+- **Son güncelleme**: 2026-11-07 (T1.4 eklendi)
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez)
-- **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
+- **Devam eden**: T1.4 (yerel SQLite şeması + migration + `DatabaseGate` hazır, 12 tablo, testler yeşil; telefonda açılış doğrulaması ve PR incelemesi bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
 - **Sıradaki görev**: T0.8 (ChatGPT: tema, i18n, saha bileşenleri) ve T1.2 (Claude: Supabase şeması + `sync`)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
@@ -367,12 +367,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.4: Yerel SQLite şeması (Drizzle)
 - **Açıklama**: Drizzle şeması her tablo için ayrı dosyada tanımlanır; outbox tablosu dahil.
-- **Dosyalar**: `src/data/db/client.ts`, `src/data/db/schema/{business,apiaries,hives,queens,inspections,treatments,feedings,harvests,relocations,tasks,outbox,sync_state}.ts`, `src/data/db/schema/index.ts`, `drizzle.config.ts`, `drizzle/` (üretilen migration'lar)
+- **Dosyalar**: `src/data/db/client.ts`, `src/data/db/DatabaseGate.tsx`, `src/data/db/schema/{business,apiaries,hives,queens,inspections,treatments,feedings,harvests,relocations,tasks,outbox,sync_state}.ts`, `src/data/db/schema/columns.ts` (ortak sütunlar), `src/data/db/schema/index.ts`, `drizzle.config.ts`, `drizzle/` (üretilen migration'lar + `migrations.d.ts`), `babel.config.js` + `metro.config.js` (`.sql` migration dosyalarını pakete gömmek için), `src/test-utils/test-database.ts` (bellek içi test veritabanı), `app/_layout.tsx` (kök düzende `DatabaseGate`), `eslint.config.js` (rota → `DatabaseGate` istisnası)
 - **Bağımlılıklar**: T1.1, T0.1
 - **Kabul Kriterleri**:
-  - [ ] Her tablo kendi dosyasında; `schema/index.ts` tek export noktası
-  - [ ] Uygulama açılışında yerel migration'lar otomatik uygulanır
-  - [ ] `useLiveQuery` ile canlı dinleme çalışır (örnek test)
+  - [x] Her tablo kendi dosyasında; `schema/index.ts` tek export noktası
+  - [ ] Uygulama açılışında yerel migration'lar otomatik uygulanır *(kod ve Node testi hazır; telefonda Expo Go ile açılış doğrulaması bekliyor)*
+  - [x] `useLiveQuery` ile canlı dinleme çalışır (örnek test)
+- **Notlar**: Yerel şema sunucuyla aynı tablo ve sütun adlarını kullanır (`sync_seq` hariç; imleç `sync_state`'te). Yabancı anahtar ve check kısıtları yerelde yoktur: doğrulamayı domain zod şemaları yapar, pull sırasında çocuk kayıt ebeveynden önce gelirse yazma bozulmasın. Testlerde Node tarafı için `better-sqlite3` (devDependency) kullanılır. Migration üretmek için `npm run db:generate`.
 
 ### Görev T1.5: Repository katmanı
 - **Açıklama**: Her varlık için ayrı repository. Yazma işlemi ve outbox kaydı tek transaction'dadır. Okumalar `watch*` metotlarıyla canlı sorgu olarak sunulur.

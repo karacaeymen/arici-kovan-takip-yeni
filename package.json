@@ -19,6 +19,7 @@
     "test:ui": "jest --selectProjects ui",
     "test:coverage": "jest --coverage",
     "test:functions": "deno test --config supabase/functions/deno.json --allow-env supabase/functions",
+    "db:generate": "drizzle-kit generate",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
@@ -28,11 +29,13 @@
   "dependencies": {
     "@expo/metro-runtime": "~58.0.15",
     "@sentry/react-native": "~8.28.0",
+    "drizzle-orm": "^0.45.4",
     "expo": "~58.0.19",
     "expo-constants": "~58.0.13",
     "expo-dev-client": "~58.0.15",
     "expo-linking": "~58.0.14",
     "expo-router": "~58.0.26",
+    "expo-sqlite": "~58.0.15",
     "expo-status-bar": "~58.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -44,9 +47,13 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^14.1.0",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0",
+    "babel-plugin-inline-import": "^3.0.0",
+    "better-sqlite3": "^13.0.3",
     "deno": "^2.9.6",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.4",
     "eslint-config-prettier": "^10.1.8",
@@ -62,7 +69,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --max-warnings=0",
+      "eslint --fix --max-warnings=0 --no-warn-ignored",
       "prettier --write"
     ],
     "*.json": "prettier --write"
