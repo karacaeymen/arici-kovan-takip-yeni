@@ -1,8 +1,8 @@
 # Faruk için başlangıç dosyası
 
-> Hazırlanma: 2026-11-05. Bu dosya o günün özetidir. Bir çelişki görürsen **repo kazanır**: `TODO.md` > `CLAUDE.md` > `docs/YOL_HARITASI.md` > bu dosya.
+> Hazırlanma: 2026-11-05 · Son güncelleme: 2026-11-21 (T1.4 ve T1.5 bitti, T1.6 sana verildi). Bu dosya o günün özetidir. Bir çelişki görürsen **repo kazanır**: `TODO.md` > `CLAUDE.md` > `docs/YOL_HARITASI.md` > bu dosya.
 >
-> `docs/YOL_HARITASI.md`'de adı geçen "Arkadaş" sensin. Orada "ChatGPT" şeridine yazılmış uygulama içi temel işleri (T0.8, T1.4, T1.5) artık sen yürütüyorsun.
+> Dönem A'nın "uygulama içi temel" şeridi senin (`docs/YOL_HARITASI.md` §2.4): T0.8, T1.4 ✅, T1.5 ✅, **T1.6**, T1.7, T1.9, T1.8.
 
 ---
 
@@ -24,7 +24,7 @@ Gerekenler: **Git**, **Node.js 22** (CI de 22 kullanıyor), telefonda **Expo Go*
 git clone https://github.com/karacaeymen/arici-kovan-takip-yeni.git
 cd arici-kovan-takip-yeni
 npm install              # husky commit kancaları da kurulur
-cp .env.example .env.local   # değerleri Eymen'den al; .env.local asla commit edilmez
+cp .env.example .env.local   # dev değerlerini Eymen sana özelden gönderir; .env.local asla commit edilmez
 npm start                # Expo Go ile QR'ı okut, "Ana sayfa" açılmalı
 ```
 
@@ -36,6 +36,8 @@ npm run lint
 npm test
 npm run format:check
 ```
+
+`.env.local` değerleri (Supabase dev URL'i ve anon anahtarı) GitHub'a, PR açıklamasına ya da gruba yazılmaz; yalnızca özelden paylaşılır. Değerler olmadan da testler çalışır; yalnızca telefonda uygulama sunucuya bağlanamaz.
 
 Windows'ta satır sonları LF'dir (`.gitattributes` bunu zorlar). Git `CRLF` uyarısı verirse `git config core.autocrlf false` yap.
 
@@ -74,15 +76,18 @@ Bakıp örnek alacağın mevcut kod:
 
 ---
 
-## 5. Şu anki durum
+## 5. Şu anki durum (2026-11-21)
 
 | Görev | Ne | Durum |
 |---|---|---|
-| T0.1–T0.4 | İskelet, lint, test altyapısı, Supabase + `health` | ✅ bitti |
+| T0.1–T0.4 | İskelet, lint, test altyapısı, Supabase + `health` | ✅ |
 | T0.5, T0.6, T0.7 | EAS, CI, Sentry | 🔄 kod hazır; hesap/ayar işleri Eymen'de, **dokunma** |
-| T1.1 | Domain varlıkları + zod şemaları (`src/domain/**`) | ✅ `main`'de |
-| T1.2 | Supabase tabloları + `sync` fonksiyonu | 🔄 PR #9, merge bekliyor |
-| T1.3 | RLS politikaları | Claude, T1.2'den sonra |
+| T1.1 | Domain varlıkları + zod şemaları (`src/domain/**`) | ✅ |
+| T1.2 | Supabase tabloları + `sync` fonksiyonu | ✅ `main`'de (dev/prod'a yükleme T0.6 ayarlarını bekliyor) |
+| T1.3 | RLS politikaları | Claude, sıradaki |
+| T1.4 | Yerel SQLite şeması | ✅ senin; telefonda açılış doğrulaması bekliyor |
+| T1.5 | Repository katmanı | ✅ senin |
+| **T1.6** | İstemci senkron motoru | ⏭️ **senin, sıradaki** |
 
 ---
 
@@ -90,41 +95,37 @@ Bakıp örnek alacağın mevcut kod:
 
 Ayrıntılı **Dosyalar** ve **Kabul Kriterleri** her zaman `TODO.md`'de. Yalnızca o satırdaki dosyaları aç; listede olmayan bir dosya gerekiyorsa önce `TODO.md`'yi aynı PR'da güncelle.
 
+### T1.6 — İstemci senkron motoru (sıradaki)
+- **Bağımlılık:** T1.2 ✅, T1.5 ✅, T1.3 (Claude, paralel yürüyor). T1.3 bitmeden de başlayabilirsin: testler sahte API istemcisiyle koşar. Yalnızca dev sunucusuyla uçtan uca deneme T1.3'ü bekler (RLS politikası yokken push `forbidden` döner).
+- **Dosyalar:** `src/data/supabase/client.ts`, `src/data/api/sync.client.ts`, `src/services/sync/{SyncPushService,SyncPullService,SyncCoordinator}.ts`, `src/services/sync/syncStore.ts` + her biri için `.test.ts`.
+- **Sunucu sözleşmesi** (`supabase/functions/sync/`; kaynak `services/sync-protocol.ts`):
+  - `POST /sync/push` gövdesi `{ protocolVersion: 1, changes: [{ table, row }] }`, en fazla **500** değişiklik. Yanıt `{ results: [{ table, id, status: 'applied' | 'stale' | 'rejected', reason? }] }`. `reason`: `invalid_row`, `missing_parent`, `forbidden`, `clock_skew`, `unknown`.
+  - `GET /sync/pull?protocolVersion=1&cursor=<sayı>&limit=<≤500>` yanıtı `{ changes, cursor, hasMore }`. İmleç tek bir global sayıdır; `sync_state`'e yazılır. `hasMore` true ise hemen bir sonraki sayfa istenir.
+  - Protokol sürümü uyuşmazsa sunucu **426** döner: senkron durur, kullanıcıya "uygulamayı güncelle" gösterilir.
+  - Alan adları istemcide camelCase'tir; snake_case dönüşümünü sunucu yapar.
+  - Cihaz saati sunucudan 10 dakikadan fazla ilerideyse satır `clock_skew` ile reddedilir.
+- **T1.5'ten hazır gelenler:** `OutboxRepository.peek(limit)`, `markSent(ids)`, `markFailed(ids, hata)`, `count()`, `watchPending()`; pull için her repository'de `applyRemote(row)` (yerel daha yeniyse `stale`, uygulanırsa bekleyen outbox girdisini siler).
+- **Push sonucu nasıl işlenir (öneri):** `applied` ve `stale` → `markSent`. `rejected` + `missing_parent` → ebeveyn henüz gitmemiş olabilir, `markFailed` ile tekrar denenir. Diğer `rejected` nedenleri kalıcıdır → `markSent` ile kuyruktan çıkar ve `reportError` ile Sentry'ye gider. Ağ hatası → tüm parti `markFailed`, üstel bekleme.
+- **Sıra:** Önce push, sonra pull. Ağ geldiğinde ve uygulama öne geldiğinde otomatik tetiklenir. Aynı anda iki senkron çalışmaz.
+- **Kabul:** Hiçbir bileşen senkron servislerini doğrudan import etmez; kuyruk, yeniden deneme (üstel bekleme) ve LWW testli; otomatik tetikleme çalışır.
+
+### T1.7 — Giriş (telefon + OTP)
+- T1.6'dan sonra. Ayrıntı `TODO.md` T1.7. Ekranlı ilk görev olduğu için tema (T0.8) hazır değilse geçici değerlerle başla.
+
 ### T0.8 — Tema, i18n ve saha bileşenleri
-- **Bekleyen:** Senin renk paleti ve yazı tipi tasarımın. Tasarım hazırsa değerleri doğrudan `src/theme/*.ts`'e işle. Hazır değilse geçici değerlerle başla ve dosyada açıkça `// GEÇİCİ: tasarım gelince değişecek` diye işaretle.
-- **Dosyalar:** `src/theme/{colors,spacing,typography,radius,index}.ts`, `src/i18n/{index.ts,tr.json}`, `src/lib/format.ts`, `src/components/ui/<Ad>/<Ad>.tsx` + `<Ad>.test.tsx`.
-- **Bileşenler:** AppText, Button, Card, ListItem, Stepper, SegmentedChoice, Chip, BottomSheet, EmptyState, OfflineBanner.
-- **Dikkat:** Dokunma hedefleri en az **56 dp** (eldivenli el). Her bileşenin rol tabanlı RNTL testi olsun (`getByRole`). Tema ve i18n sağlayıcılarını `src/test-utils/render.tsx`'e ekle (dosyada bunun için not var). `HomeScreen`'deki sabit metni `tr.json`'a taşı.
+- **Bekleyen:** Senin renk paleti ve yazı tipi tasarımın. Tasarım gelince araya alınır.
+- **Dosyalar:** `src/theme/{colors,spacing,typography,radius,index}.ts`, `src/i18n/{index.ts,tr.json}`, `src/lib/format.ts`, `src/components/ui/<Ad>/<Ad>.tsx` + `<Ad>.test.tsx` (AppText, Button, Card, ListItem, Stepper, SegmentedChoice, Chip, BottomSheet, EmptyState, OfflineBanner).
+- **Dikkat:** Dokunma hedefleri en az **56 dp**. Her bileşenin rol tabanlı RNTL testi olsun. Tema ve i18n sağlayıcılarını `src/test-utils/render.tsx`'e ekle.
 
-### T1.4 — Yerel SQLite şeması (Drizzle)
-- **Bağımlılık:** T1.1 (✅ hazır). Şimdi başlayabilirsin.
-- **Dosyalar:** `src/data/db/client.ts`, `src/data/db/schema/{business,apiaries,hives,queens,inspections,treatments,feedings,harvests,relocations,tasks,outbox,sync_state}.ts`, `src/data/db/schema/index.ts`, `drizzle.config.ts`, `drizzle/`.
-- **Paketler:** `npx expo install expo-sqlite`, `npm install drizzle-orm`, `npm install -D drizzle-kit`. Yalnızca bu görevin gerektirdiği paketi ekle.
-- **Sunucuyla aynı olmalı** (PR #9'daki `supabase/migrations/*_create_<tablo>.sql` dosyalarına bak):
-  - Tablo adları: `businesses, apiaries, hives, queens, inspections, treatments, feedings, harvests, relocations, tasks` (çoğul; senkron bu adlarla eşleşir).
-  - Sütunlar `snake_case`, alanlar domain'deki camelCase karşılıkları (`business_id` ↔ `businessId`).
-  - Her satırda `id` (UUID metin), `created_at`, `updated_at`, `deleted_at` var. Zaman damgaları **saat dilimli ISO metni**, takvim günleri `YYYY-MM-DD` metni.
-  - Silme her zaman `deleted_at` doldurularak yapılır; satır fiziksel olarak silinmez.
-  - Sunucudaki `sync_seq` sütunu yerelde gerekmez.
-- **outbox:** Sunucuya gidecek değişikliklerin kuyruğu. `POST /sync/push` her değişikliği `{ table, row }` olarak, **satırın tamamıyla** (camelCase, en az `id` + `updatedAt`) bekler. En az: tablo adı, satır id'si, satır içeriği (JSON), sıraya girme zamanı, deneme sayısı.
-- **sync_state:** Pull imleci sunucuda tek bir global sayıdır (`sync_seq`). Son çekilen imleç ve son senkron zamanı burada tutulur.
-- **Kabul:** Her tablo kendi dosyasında, `schema/index.ts` tek export noktası; uygulama açılışında migration'lar otomatik uygulanır; `useLiveQuery` ile canlı dinleme örnek testi.
-
-### T1.5 — Repository katmanı
-- **Bağımlılık:** T1.4 `main`'e merge edilmiş olmalı.
-- **Dosyalar:** `src/data/repositories/{Business,Apiary,Hive,Queen,Inspection,Treatment,Feeding,Harvest,Relocation,Task,Outbox}Repository.ts` + her biri için `.test.ts`.
-- **Kural:** Bir kaydın yazılması ve outbox kaydı **tek transaction'da**; biri hata verirse ikisi de geri alınır (bunun testi olmalı). Okumalar `watch*` metotlarıyla canlı sorgu döner. `updatedAt` `Clock`'tan gelir. Testler Node'un SQLite sürücüsüyle bellek içi veritabanında koşar (cihaz gerekmez).
-- **Neden önemli:** Claude'un **T1.6** (istemci senkron motoru) görevi senin T1.5'ine bağlı. T1.5 merge edilmeden T1.6 başlayamaz; bu yüzden Outbox repository'sinin API'si (kuyruktan oku, gönderileni işaretle, deneme sayısını artır) net olsun.
-
-### Sonrası (sırayla)
-T1.7 telefon + OTP girişi → T1.9 ayarlar/senkron ekranı → T1.8 onboarding (T1.6 merge edildikten sonra). Ayrıntı: `docs/YOL_HARITASI.md` §2.4.
+### Sonrası
+T1.9 ayarlar/senkron ekranı → T1.8 onboarding. Ayrıntı: `docs/YOL_HARITASI.md` §2.4.
 
 ---
 
 ## 7. Alan sahipliği (çakışmayı önlemek için)
 
-- **Senin alanın:** `src/theme/**`, `src/components/ui/**`, `src/i18n/**`, `src/data/db/**`, `src/data/repositories/**`, ilgili `app/**` ve `src/features/{auth,onboarding,settings,home}/**`.
-- **Claude'un alanı, dokunma:** `src/domain/**`, `supabase/**`, `src/services/sync/**`, `src/data/api/**`.
+- **Senin alanın:** `src/theme/**`, `src/components/ui/**`, `src/i18n/**`, `src/data/db/**`, `src/data/repositories/**`, `src/data/api/**`, `src/data/supabase/**`, `src/services/sync/**`, ilgili `app/**` ve `src/features/{auth,onboarding,settings,home}/**`.
+- **Claude'un alanı, dokunma:** `src/domain/**`, `supabase/**`. Sunucu tarafında bir değişiklik gerekirse ne gerektiğini Eymen'e yaz.
 - **Ortak dosyalar:** `package.json`, `package-lock.json`, `TODO.md`, `docs/YOL_HARITASI.md`, `src/i18n/tr.json`. PR açmadan önce güncel `main`'i al (`git pull origin main`); çakışma çıkarsa diğer tarafın satırlarını silme.
 
 ---
@@ -136,7 +137,12 @@ T1.7 telefon + OTP girişi → T1.9 ayarlar/senkron ekranı → T1.8 onboarding 
 3. Kodu ve testini birlikte yaz (test, test ettiği dosyanın yanında: `<dosya>.test.ts(x)`).
 4. Bitmeden önce: `npm run typecheck`, `npm run lint`, `npm test` yeşil olsun.
 5. Aynı PR'da `TODO.md`'de görevin kutucuklarını `[x]` yap, **Güncel Durum**'u ve `docs/YOL_HARITASI.md` §2.1 tablosunu güncelle.
-6. PR aç, açıklamada `.github/pull_request_template.md` başlıklarını kullan. Bir görev = bir PR; `main`'e doğrudan push yok. Eymen inceler ve iOS/Android'de doğrular.
+6. PR aç, açıklamada `.github/pull_request_template.md` başlıklarını kullan. Bir görev = bir PR; `main`'e doğrudan push yok.
+
+**İnceleme anlaşması** (`docs/YOL_HARITASI.md` §6):
+- CI'ı yeşil olan her PR'a Eymen **24 saat içinde** bakar. Yanıt gelmezse hatırlat.
+- **Küçük PR'ları** (yalnızca belge, `TODO.md`/yol haritası güncellemesi ya da kendi alanında tek dosyalık düzeltme) CI yeşilse kendin merge edebilirsin.
+- Görev PR'ları (T-numaralı) ve Claude'un alanına dokunan PR'lar Eymen'in onayıyla merge edilir; iOS/Android doğrulamasını Eymen yapar.
 
 ---
 
@@ -154,9 +160,9 @@ T1.7 telefon + OTP girişi → T1.9 ayarlar/senkron ekranı → T1.8 onboarding 
 ```text
 Bu repoda Faruk olarak çalışıyorum. Önce CLAUDE.md, TODO.md §1 ve Güncel Durum,
 docs/YOL_HARITASI.md §2.4 ve docs/FARUK_BASLANGIC.md dosyalarını oku.
-Sonra TODO.md'deki T1.4 görevinin Dosyalar ve Kabul Kriterleri satırlarına göre
-bir uygulama planı çıkar (dosya listesi, tablo/sütunlar, testler) ve onayımı bekle.
+Sonra TODO.md'deki T1.6 görevinin Dosyalar ve Kabul Kriterleri satırlarına göre
+bir uygulama planı çıkar (dosya listesi, servis API'leri, testler) ve onayımı bekle.
 Yalnızca görevin Dosyalar satırındaki dosyalara dokun.
 ```
 
-Görev numarasını (T0.8, T1.4, T1.5) ihtiyacına göre değiştir. Takıldığında Eymen'e sor.
+Görev numarasını (T1.6, T1.7, T0.8 …) ihtiyacına göre değiştir. Takıldığında Eymen'e sor.
