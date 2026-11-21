@@ -2,6 +2,7 @@ import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { ErrorBoundary as ErrorScreen } from '@/components/ui/ErrorBoundary/ErrorBoundary';
+import { DatabaseGate } from '@/data/db/DatabaseGate';
 import { reportScreenError } from '@/lib/observability/report';
 import { initObservability, wrapRoot } from '@/lib/observability/sentry';
 
@@ -17,7 +18,9 @@ function RootLayout() {
   return (
     <>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }} />
+      <DatabaseGate>
+        <Stack screenOptions={{ headerShown: false }} />
+      </DatabaseGate>
     </>
   );
 }
