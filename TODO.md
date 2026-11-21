@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-11-21 (T1.2 eklendi)
+- **Son güncelleme**: 2026-11-21 (T1.2 ve T1.5 eklendi)
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te)
-- **Devam eden**: T1.4 (yerel SQLite şeması + migration + `DatabaseGate` hazır, 12 tablo, testler yeşil; telefonda açılış doğrulaması ve PR incelemesi bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
-- **Sıradaki görev**: T1.5 (repository katmanı), T0.8 (tema, i18n, saha bileşenleri) ve T1.3 (Claude: RLS politikaları)
+- **Devam eden**: T1.5 (11 repository + ortak çekirdek hazır, testler yeşil; PR incelemesi bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
+- **Sıradaki görev**: T1.6 (senkron motoru), T0.8 (tema, i18n, saha bileşenleri) ve T1.3 (Claude: RLS politikaları)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -378,12 +378,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.5: Repository katmanı
 - **Açıklama**: Her varlık için ayrı repository. Yazma işlemi ve outbox kaydı tek transaction'dadır. Okumalar `watch*` metotlarıyla canlı sorgu olarak sunulur.
-- **Dosyalar**: `src/data/repositories/{Business,Apiary,Hive,Queen,Inspection,Treatment,Feeding,Harvest,Relocation,Task,Outbox}Repository.ts` + her biri için `.test.ts`
+- **Dosyalar**: `src/data/repositories/{Business,Apiary,Hive,Queen,Inspection,Treatment,Feeding,Harvest,Relocation,Task,Outbox}Repository.ts` + her biri için `.test.ts`, `src/data/repositories/syncedRepository.ts` (ortak çekirdek: CRUD + outbox + `applyRemote` + `query`), `src/test-utils/repository-contract.ts` (her repository'nin geçtiği ortak test paketi), `src/data/db/client.ts` (`LocalDatabase` tipi), `src/data/db/liveQuery.test.tsx` (`watch*` + `useLiveQuery` örneği)
 - **Bağımlılıklar**: T1.4
 - **Kabul Kriterleri**:
-  - [ ] CRUD ve outbox işlemleri tek transaction içinde atomik (hata durumunda ikisi de geri alınır)
-  - [ ] Repository'ler yalnızca `data/db` ve domain tiplerini import eder
-  - [ ] Testler Node SQLite sürücüsüyle bellek içi veritabanında koşar
+  - [x] CRUD ve outbox işlemleri tek transaction içinde atomik (hata durumunda ikisi de geri alınır)
+  - [x] Repository'ler yalnızca `data/db` ve domain tiplerini import eder
+  - [x] Testler Node SQLite sürücüsüyle bellek içi veritabanında koşar
+- **Notlar** (T1.6 için): Repository'ler `createXRepository(db, clock)` fabrikasıyla kurulur; `clock`, `src/lib/clock.ts`'deki `Clock` ile aynı biçimdedir. Yazmalar: `create` (kimliği çağıran üretir), `update`, `remove` (`deletedAt` doldurur); `updatedAt` her yazmada saatten alınır ve öncekinden en az 1 ms ileri gider. Aynı kaydın gönderilmemiş eski outbox girdisi yenisiyle değiştirilir (yalnızca son hali gider). Pull için `applyRemote(row)`: kuyruğa eklemez, yereldeki hal daha yeni ya da aynıysa `stale` döner, uygulanırsa o kaydın bekleyen girdisini siler. Outbox: `peek(limit)`, `markSent(ids)`, `markFailed(ids, hata)`, `count()`, `watchPending()`. Okumalar: `watch*` canlı sorgu (`useLiveQuery`), `list*`/`get*` anlık okuma; silinmiş kayıtlar görünmez. Saf veri katmanı olduğu için cihaz doğrulaması gerektirmez.
 
 ### Görev T1.6: Senkron motoru (istemci)
 - **Açıklama**: Push, pull ve koordinasyon ayrı servislerdir. Backend ile iletişim tek bir API istemcisi üzerindendir. Senkron durumu reaktif bir store'da tutulur.

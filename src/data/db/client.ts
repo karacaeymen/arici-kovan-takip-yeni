@@ -1,3 +1,4 @@
+import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import { drizzle, type ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 
@@ -7,6 +8,15 @@ import * as schema from './schema';
 export const DATABASE_NAME = 'kovan.db';
 
 export type AppDatabase = ExpoSQLiteDatabase<typeof schema>;
+
+/**
+ * Repository'lerin kabul ettiği veritabanı: telefonda `expo-sqlite`, testlerde Node'daki
+ * `better-sqlite3`. İkisi de eşzamanlı (sync) Drizzle veritabanıdır ve aynı şemayı taşır.
+ */
+export type LocalDatabase = BaseSQLiteDatabase<'sync', unknown, typeof schema>;
+
+/** `LocalDatabase` ya da onun içindeki bir transaction. */
+export type LocalExecutor = Pick<LocalDatabase, 'select' | 'insert' | 'update' | 'delete'>;
 
 let instance: AppDatabase | undefined;
 
