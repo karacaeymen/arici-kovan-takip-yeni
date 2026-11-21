@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-11-21 (T1.2 ve T1.5 eklendi)
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te)
-- **Devam eden**: T1.5 (11 repository + ortak çekirdek hazır, testler yeşil; PR incelemesi bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
-- **Sıradaki görev**: T1.6 (senkron motoru), T0.8 (tema, i18n, saha bileşenleri) ve T1.3 (Claude: RLS politikaları)
+- **Son güncelleme**: 2026-11-21 (T1.2 ve T1.5 eklendi; T1.6 Faruk'a verildi)
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te; dev/prod'a yükleme T0.6 ayarları bitince), T1.5 (11 repository + ortak çekirdek; saf veri katmanı, cihaz doğrulaması gerektirmez)
+- **Devam eden**: T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
+- **Sıradaki görev**: T1.6 (Faruk: istemci senkron motoru), T1.3 (Claude: RLS politikaları), T0.8 (Faruk: tasarım gelince)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
