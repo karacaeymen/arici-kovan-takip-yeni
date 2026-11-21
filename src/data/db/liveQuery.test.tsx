@@ -1,9 +1,13 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 
+import { createFixedClock } from '../../lib/clock';
 import { createTestDatabase } from '../../test-utils/test-database';
+import { createHiveRepository } from '../repositories/HiveRepository';
 
 import { businesses } from './schema';
+
+const APIARY = '0b6f2d3e-6f0a-4c1e-9d2b-1a2b3c4d5e03';
 
 // Gerçek `expo-sqlite` telefondadır; burada yalnızca "tablo değişti" bildirimini taklit ediyoruz.
 type ChangeListener = (event: { tableName: string }) => void;
@@ -53,6 +57,26 @@ describe('useLiveQuery (canlı dinleme)', () => {
     await act(async () => notifyChange('hives'));
 
     expect(result.current.data).toEqual([]);
+  });
+
+  it("repository'nin watch* sorgusu useLiveQuery ile canlı dinlenir (T1.5)", async () => {
+    const db = createTestDatabase();
+    const hivesRepo = createHiveRepository(db, createFixedClock('2026-11-01T08:00:00Z'));
+    const { result } = await renderHook(() => useLiveQuery(hivesRepo.watchByApiary(APIARY)));
+    await waitFor(() => expect(result.current.updatedAt).toBeDefined());
+
+    hivesRepo.create({
+      id: business.id,
+      businessId: business.id,
+      apiaryId: APIARY,
+      number: 4,
+      name: null,
+      status: 'active',
+      notes: null,
+    });
+    await act(async () => notifyChange('hives'));
+
+    await waitFor(() => expect(result.current.data.map((h) => h.number)).toEqual([4]));
   });
 
   it('bileşen kaldırılınca dinleyici temizlenir', async () => {
