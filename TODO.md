@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-10-29
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez)
-- **Devam eden**: T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
-- **Sıradaki görev**: T0.8 (ChatGPT: tema, i18n, saha bileşenleri) ve T1.2 (Claude: Supabase şeması + `sync`)
+- **Son güncelleme**: 2026-11-21 (T1.2 ve T1.5 eklendi)
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te)
+- **Devam eden**: T1.5 (11 repository + ortak çekirdek hazır, testler yeşil; PR incelemesi bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection ve Environments kurulumu bekliyor)
+- **Sıradaki görev**: T1.6 (senkron motoru), T0.8 (tema, i18n, saha bileşenleri) ve T1.3 (Claude: RLS politikaları)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -350,12 +350,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.2: Supabase şeması ve `sync` Edge Function'ı
 - **Açıklama**: Tablolar ayrı migration dosyalarında oluşturulur. LWW birleştirmesi atomik olsun diye SQL fonksiyonlarında (`sync_apply_changes`, `sync_changes_since`) yapılır; istemci bunlara `sync` Edge Function'ının iki route'u üzerinden ulaşır.
-- **Dosyalar**: `supabase/migrations/<zaman>_create_<tablo>.sql` (tablo başına), `<zaman>_sync_functions.sql`, `supabase/tests/database/sync_test.sql`, `supabase/functions/sync/index.ts`, `sync/routes/push.route.ts`, `sync/routes/pull.route.ts`, `sync/services/sync-push.service.ts`, `sync/services/sync-pull.service.ts`, `sync/repositories/sync.repository.ts`, `sync/tests/*.test.ts`
+- **Dosyalar**: `supabase/migrations/<zaman>_sync_base.sql` (ortak `sync_seq` sırası ve tetikleyici), `supabase/migrations/<zaman>_create_<tablo>.sql` (tablo başına), `<zaman>_sync_functions.sql`, `supabase/tests/database/sync_test.sql`, `supabase/functions/sync/index.ts`, `sync/routes/push.route.ts`, `sync/routes/pull.route.ts`, `sync/services/sync-push.service.ts`, `sync/services/sync-pull.service.ts`, `sync/services/sync-protocol.ts` (protokol sürümü, tablo listesi, alan adı dönüşümü), `sync/repositories/sync.repository.ts`, `sync/tests/*.test.ts`, `supabase/functions/_shared/auth/require-user.ts` + `_shared/tests/{require-user.test,fake-jwt}.ts`, `supabase/config.toml` (`[functions.sync] verify_jwt = true`)
+- **Not**: Tablolar RLS açık ve politikasız oluşturulur; T1.3'e kadar kullanıcılar hiçbir satırı okuyamaz/yazamaz (push `forbidden` döner). Pull imleci global `sync_seq`'tir; yazmalar işletme başına kilit aldığından numara sırası commit sırasıyla aynıdır. Cihaz saati sunucudan 10 dakikadan fazla ilerideyse satır `clock_skew` ile reddedilir.
 - **Bağımlılıklar**: T0.4, T1.1
 - **Kabul Kriterleri**:
-  - [ ] `POST /sync/push` ve `GET /sync/pull` ayrı route dosyalarındadır; ikisi de girdiyi zod ile doğrular
-  - [ ] Parti bölme, sürüm kontrolü ve hata eşleme servistedir; SQL çağrısı yalnızca `sync.repository.ts`'dedir
-  - [ ] LWW mantığı pgTAP ile; servisler ve route'lar `deno test` ile test edilmiştir
+  - [x] `POST /sync/push` ve `GET /sync/pull` ayrı route dosyalarındadır; ikisi de girdiyi zod ile doğrular
+  - [x] Parti bölme, sürüm kontrolü ve hata eşleme servistedir; SQL çağrısı yalnızca `sync.repository.ts`'dedir
+  - [x] LWW mantığı pgTAP ile; servisler ve route'lar `deno test` ile test edilmiştir
 
 ### Görev T1.3: RLS politikaları
 - **Açıklama**: Her tablo için işletme bazlı politikalar ayrı migration dosyalarında yazılır. Kullanıcı istekleri Edge Function'larda kullanıcı JWT'li istemciyle yürütülür (service-role değil).
@@ -367,21 +368,23 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.4: Yerel SQLite şeması (Drizzle)
 - **Açıklama**: Drizzle şeması her tablo için ayrı dosyada tanımlanır; outbox tablosu dahil.
-- **Dosyalar**: `src/data/db/client.ts`, `src/data/db/schema/{business,apiaries,hives,queens,inspections,treatments,feedings,harvests,relocations,tasks,outbox,sync_state}.ts`, `src/data/db/schema/index.ts`, `drizzle.config.ts`, `drizzle/` (üretilen migration'lar)
+- **Dosyalar**: `src/data/db/client.ts`, `src/data/db/DatabaseGate.tsx`, `src/data/db/schema/{business,apiaries,hives,queens,inspections,treatments,feedings,harvests,relocations,tasks,outbox,sync_state}.ts`, `src/data/db/schema/columns.ts` (ortak sütunlar), `src/data/db/schema/index.ts`, `drizzle.config.ts`, `drizzle/` (üretilen migration'lar + `migrations.d.ts`), `babel.config.js` + `metro.config.js` (`.sql` migration dosyalarını pakete gömmek için), `src/test-utils/test-database.ts` (bellek içi test veritabanı), `app/_layout.tsx` (kök düzende `DatabaseGate`), `eslint.config.js` (rota → `DatabaseGate` istisnası)
 - **Bağımlılıklar**: T1.1, T0.1
 - **Kabul Kriterleri**:
-  - [ ] Her tablo kendi dosyasında; `schema/index.ts` tek export noktası
-  - [ ] Uygulama açılışında yerel migration'lar otomatik uygulanır
-  - [ ] `useLiveQuery` ile canlı dinleme çalışır (örnek test)
+  - [x] Her tablo kendi dosyasında; `schema/index.ts` tek export noktası
+  - [ ] Uygulama açılışında yerel migration'lar otomatik uygulanır *(kod ve Node testi hazır; telefonda Expo Go ile açılış doğrulaması bekliyor)*
+  - [x] `useLiveQuery` ile canlı dinleme çalışır (örnek test)
+- **Notlar**: Yerel şema sunucuyla aynı tablo ve sütun adlarını kullanır (`sync_seq` hariç; imleç `sync_state`'te). Yabancı anahtar ve check kısıtları yerelde yoktur: doğrulamayı domain zod şemaları yapar, pull sırasında çocuk kayıt ebeveynden önce gelirse yazma bozulmasın. Testlerde Node tarafı için `better-sqlite3` (devDependency) kullanılır. Migration üretmek için `npm run db:generate`.
 
 ### Görev T1.5: Repository katmanı
 - **Açıklama**: Her varlık için ayrı repository. Yazma işlemi ve outbox kaydı tek transaction'dadır. Okumalar `watch*` metotlarıyla canlı sorgu olarak sunulur.
-- **Dosyalar**: `src/data/repositories/{Business,Apiary,Hive,Queen,Inspection,Treatment,Feeding,Harvest,Relocation,Task,Outbox}Repository.ts` + her biri için `.test.ts`
+- **Dosyalar**: `src/data/repositories/{Business,Apiary,Hive,Queen,Inspection,Treatment,Feeding,Harvest,Relocation,Task,Outbox}Repository.ts` + her biri için `.test.ts`, `src/data/repositories/syncedRepository.ts` (ortak çekirdek: CRUD + outbox + `applyRemote` + `query`), `src/test-utils/repository-contract.ts` (her repository'nin geçtiği ortak test paketi), `src/data/db/client.ts` (`LocalDatabase` tipi), `src/data/db/liveQuery.test.tsx` (`watch*` + `useLiveQuery` örneği)
 - **Bağımlılıklar**: T1.4
 - **Kabul Kriterleri**:
-  - [ ] CRUD ve outbox işlemleri tek transaction içinde atomik (hata durumunda ikisi de geri alınır)
-  - [ ] Repository'ler yalnızca `data/db` ve domain tiplerini import eder
-  - [ ] Testler Node SQLite sürücüsüyle bellek içi veritabanında koşar
+  - [x] CRUD ve outbox işlemleri tek transaction içinde atomik (hata durumunda ikisi de geri alınır)
+  - [x] Repository'ler yalnızca `data/db` ve domain tiplerini import eder
+  - [x] Testler Node SQLite sürücüsüyle bellek içi veritabanında koşar
+- **Notlar** (T1.6 için): Repository'ler `createXRepository(db, clock)` fabrikasıyla kurulur; `clock`, `src/lib/clock.ts`'deki `Clock` ile aynı biçimdedir. Yazmalar: `create` (kimliği çağıran üretir), `update`, `remove` (`deletedAt` doldurur); `updatedAt` her yazmada saatten alınır ve öncekinden en az 1 ms ileri gider. Aynı kaydın gönderilmemiş eski outbox girdisi yenisiyle değiştirilir (yalnızca son hali gider). Pull için `applyRemote(row)`: kuyruğa eklemez, yereldeki hal daha yeni ya da aynıysa `stale` döner, uygulanırsa o kaydın bekleyen girdisini siler. Outbox: `peek(limit)`, `markSent(ids)`, `markFailed(ids, hata)`, `count()`, `watchPending()`. Okumalar: `watch*` canlı sorgu (`useLiveQuery`), `list*`/`get*` anlık okuma; silinmiş kayıtlar görünmez. Saf veri katmanı olduğu için cihaz doğrulaması gerektirmez.
 
 ### Görev T1.6: Senkron motoru (istemci)
 - **Açıklama**: Push, pull ve koordinasyon ayrı servislerdir. Backend ile iletişim tek bir API istemcisi üzerindendir. Senkron durumu reaktif bir store'da tutulur.

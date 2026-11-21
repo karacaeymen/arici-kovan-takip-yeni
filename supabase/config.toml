@@ -418,3 +418,7 @@ enabled = true
 # Edge Function'lar (TODO.md §1.6). health herkese açıktır: JWT istemez.
 [functions.health]
 verify_jwt = false
+
+# Senkron yalnızca oturum açmış kullanıcıya açıktır; JWT imzasını Supabase ağ geçidi doğrular.
+[functions.sync]
+verify_jwt = true
