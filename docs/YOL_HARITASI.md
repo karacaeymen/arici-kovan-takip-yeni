@@ -46,7 +46,7 @@ Dönem A'nın kodunu **Eymen** (Claude ile) ve **Faruk** paralel yazar. Ayrınt�
 | 13 | **T1.5** Repository katmanı | Faruk | ✅ |
 | 14 | **T1.6** İstemci senkron motoru | Faruk | 🔄 kod hazır, PR incelemesi bekliyor |
 | 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.6 üzerine kurulu) |
-| 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | |
+| 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.7 üzerine kurulu) |
 | 17 | **T1.8** Onboarding | Faruk | |
 | 18 | **T4.1** Referans içerik servisi | Claude | |
 | 19 | **T2.1** Konum izni servisi *(T2.2 buna bağlı olduğu için Dönem A'ya alındı)* | Claude | |
