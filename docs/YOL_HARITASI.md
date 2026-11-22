@@ -37,7 +37,7 @@ Dönem A'nın kodunu **Eymen** (Claude ile) ve **Faruk** paralel yazar. Ayrınt�
 | 4 | **T0.4** Supabase ortamları + `health` fonksiyonu şablonu | Eymen | ✅ |
 | 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | Eymen (elle) | 🔄 ayarlar hazır, hesaplar en sona |
 | 6 | **T0.7** Sentry + config modülü | Eymen (elle) | 🔄 kod hazır, Sentry hesabı en sona |
-| 7 | **T0.6** CI hattı | Eymen (elle) | 🔄 iş akışları hazır, GitHub ayarları bekliyor |
+| 7 | **T0.6** CI hattı | Eymen (elle) | 🔄 GitHub ayarları tamam, dev'e otomatik yükleme yeşil; prod'un ilk onaylı yüklemesi bekliyor |
 | 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Faruk'un tasarımından) | Faruk | 🔄 kısmen (T1.7'de GEÇİCİ tema, i18n, Button); tasarım bekliyor |
 | 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ✅ |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | ✅ |
