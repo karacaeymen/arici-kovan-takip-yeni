@@ -44,7 +44,7 @@ Dönem A'nın kodunu **Eymen** (Claude ile) ve **Faruk** paralel yazar. Ayrınt�
 | 11 | **T1.3** RLS politikaları | Claude | |
 | 12 | **T1.4** Yerel SQLite şeması (Drizzle) | Faruk | ✅ (telefonda açılış doğrulaması bekliyor) |
 | 13 | **T1.5** Repository katmanı | Faruk | ✅ |
-| 14 | **T1.6** İstemci senkron motoru | Faruk | ⏭️ sıradaki |
+| 14 | **T1.6** İstemci senkron motoru | Faruk | 🔄 kod hazır, PR incelemesi bekliyor |
 | 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | |
 | 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | |
 | 17 | **T1.8** Onboarding | Faruk | |
