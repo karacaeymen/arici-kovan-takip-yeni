@@ -257,18 +257,21 @@ otp_expiry = 3600
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
-enable_signup = false
+# Uygulamaya telefonla kayıt olunur (T1.7). Yalnızca yerel ortamı etkiler; dev/prod'da panelden
+# (Authentication → Sign In / Providers → Phone) açılır.
+enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
-template = "Your code is {{ .Code }}"
+template = "Arıcı Kovan Takip giriş kodunuz: {{ .Code }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 
 # Use pre-defined map of phone number to OTP for testing.
 # Keys are the phone number with country code and without the + prefix.
-# [auth.sms.test_otp]
-# 14152127777 = "123456"
+# Yerelde SMS göndermeden giriş denemek için test numarası (uygulamada +90 555 000 00 01, kod 123456).
+[auth.sms.test_otp]
+905550000001 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]
@@ -310,7 +313,7 @@ verify_enabled = false
 enroll_enabled = false
 verify_enabled = false
 otp_length = 6
-template = "Your code is {{ .Code }}"
+template = "Arıcı Kovan Takip giriş kodunuz: {{ .Code }}"
 max_frequency = "5s"
 
 # Configure MFA via WebAuthn
