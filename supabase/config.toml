@@ -421,7 +421,10 @@ enabled = true
 # Edge Function'lar (TODO.md §1.6). health herkese açıktır: JWT istemez.
 [functions.health]
 verify_jwt = false
+# Ortak bağımlılıklar (hono, zod...) functions/deno.json içinde; uzak yüklemede de bu dosya kullanılır.
+import_map = "./functions/deno.json"
 
 # Senkron yalnızca oturum açmış kullanıcıya açıktır; JWT imzasını Supabase ağ geçidi doğrular.
 [functions.sync]
 verify_jwt = true
+import_map = "./functions/deno.json"
