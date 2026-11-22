@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-11-22 (T1.6 ve T1.7 eklendi)
+- **Son güncelleme**: 2026-11-22 (T1.6, T1.7 ve T1.9 eklendi)
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te; dev/prod'a yükleme T0.6 ayarları bitince), T1.5 (11 repository + ortak çekirdek; saf veri katmanı, cihaz doğrulaması gerektirmez)
-- **Devam eden**: T1.7 (telefon + SMS koduyla giriş, oturum kapısı ve geçici tema hazır, testler yeşil; PR incelemesi bekliyor. Cihazda deneme için Supabase'de SMS ile girişin açılması ve bir SMS sağlayıcısı gerekiyor), T1.6 (push/pull/koordinatör + senkron durumu hazır, testler yeşil; PR incelemesi bekliyor. Otomatik tetikleme T1.7'de oturuma bağlandı, cihazda T1.7 ile birlikte doğrulanacak), T0.8 (kısmen: tema değerleri GEÇİCİ, `i18n`, `lib/format` ve `Button` T1.7'de başladı; renkler/yazı tipi Faruk'un tasarımını bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
-- **Sıradaki görev**: T1.9 (Faruk: ayarlar + senkron durum ekranı), T1.3 (Claude: RLS politikaları), T0.8 (Faruk: tasarım gelince)
+- **Devam eden**: T1.9 (ayarlar sekmesi, senkron durum ekranı ve sekmelerin başlığındaki senkron şeridi hazır, testler yeşil; PR incelemesi bekliyor, T1.7 üzerine kurulu), T1.7 (telefon + SMS koduyla giriş, oturum kapısı ve geçici tema hazır, testler yeşil; PR incelemesi bekliyor. Cihazda deneme için Supabase'de SMS ile girişin açılması ve bir SMS sağlayıcısı gerekiyor), T1.6 (push/pull/koordinatör + senkron durumu hazır, testler yeşil; PR incelemesi bekliyor. Otomatik tetikleme T1.7'de oturuma bağlandı, cihazda T1.7 ile birlikte doğrulanacak), T0.8 (kısmen: tema değerleri GEÇİCİ, `i18n`, `lib/format` ve `Button` T1.7'de başladı; renkler/yazı tipi Faruk'un tasarımını bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
+- **Sıradaki görev**: T1.8 (Faruk: onboarding), T1.3 (Claude: RLS politikaları), T0.8 (Faruk: tasarım gelince)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -416,11 +416,12 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.9: Ayarlar ana ekranı, senkron durum ekranı ve banner
 - **Açıklama**: Ekranın üstünde duran `SyncBanner` ile detayları gösteren senkron durum ekranı ayrı ayrı kodlanır. Ayarlar sekmesinin iskeleti kurulur.
-- **Dosyalar**: `app/(tabs)/settings.tsx`, `app/settings/sync-status.tsx`, `src/features/settings/screens/{SettingsScreen,SyncStatusScreen}.tsx`, `src/features/settings/components/{SyncBanner,SyncQueueList,SettingsMenuItem}.tsx`, `src/features/settings/hooks/useSyncStatus.ts`
+- **Dosyalar**: `app/(tabs)/settings.tsx`, `app/settings/sync-status.tsx`, `src/features/settings/screens/{SettingsScreen,SyncStatusScreen}.tsx`, `src/features/settings/components/{SyncBanner,SyncQueueList,SettingsMenuItem}.tsx`, `src/features/settings/hooks/useSyncStatus.ts`; ayrıca `src/services/sync/SyncStatusService.ts` ve `index.ts`'te `getSyncStatusService()` (hook repository'ye doğrudan erişemediği için bekleyen kayıtlar servisten okunur), `src/features/settings/screens/TabsHeader.tsx` (sekmelerin ortak başlığı; şerit başlığın üstünde durur, rota yalnızca `screens`'i import edebildiği için burada), `src/features/settings/components/SyncSummary.tsx` (son senkron zamanı; `lib/format`'ı yalnızca bileşenler kullanabilir), `src/features/settings/hooks/useAccount.ts` (numara ve çıkış), `app/settings/_layout.tsx` (oturum kapısı + geri düğmeli başlık), `app/(tabs)/_layout.tsx` (ayarlar sekmesi, başlık), `src/lib/format.ts` (`elapsedSince`), `src/theme/colors.ts` (uyarı/bilgi renkleri, GEÇİCİ), `src/i18n/tr.json`, `src/test-utils/sync-status-mock.ts`, `package.json` (`@expo/vector-icons`, sekme simgeleri)
 - **Bağımlılıklar**: T1.6, T0.8
 - **Kabul Kriterleri**:
-  - [ ] Senkron durumu `syncStore` → `useSyncStatus` → bileşen yoluyla reaktif aktarılır
-  - [ ] `SyncBanner` yalnızca props alır; store'a doğrudan bağlı değildir
+  - [x] Senkron durumu `syncStore` → `useSyncStatus` → bileşen yoluyla reaktif aktarılır (bekleyen kayıtlar `SyncStatusService.watchPending()` → `useLiveQuery`)
+  - [x] `SyncBanner` yalnızca props alır; store'a doğrudan bağlı değildir
+- **Notlar**: Ayarlar sekmesi şimdilik "Senkron durumu" ve hesap bölümünden (numara, çıkış) oluşur; bildirimler, abonelik, hukuki metinler, hesap silme ve dışa aktarma kendi görevlerinde eklenir. Çıkış onay ister; gönderilmemiş kayıtlar telefonda kalır (yerel veri temizliği hâlâ açık, bkz. T1.7 notu). Senkron şeridi her şey yolundayken görünmez. Yerel yazma senkronu kendiliğinden tetiklemez (yalnızca ağ gelince, uygulama öne gelince ve "Şimdi senkronla"); yazmadan kısa süre sonra push yapılması T1.6'ya ek bir iş olarak düşünülebilir.
 
 ---
 

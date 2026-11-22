@@ -13,5 +13,9 @@ export const colors = {
   danger: '#B42318',
   dangerBackground: '#FEF3F2',
   success: '#2E7D32',
+  warning: '#8A4B00',
+  warningBackground: '#FFF4E0',
+  info: '#1E4E8C',
+  infoBackground: '#EAF2FC',
   disabled: '#E7E0D5',
 } as const;

@@ -13,3 +13,19 @@ export function formatPhoneNumber(e164: string): string {
   const match = /^\+90(5\d{9})$/.exec(e164);
   return match?.[1] ? `+90 ${formatMobileDigits(match[1])}` : e164;
 }
+
+/** Geçen sürenin gösterim birimi: "az önce", "5 dk önce", "2 sa önce", "3 gün önce". */
+export interface Elapsed {
+  unit: 'justNow' | 'minutes' | 'hours' | 'days';
+  value: number;
+}
+
+/** `from` ile `now` arasındaki süre, en büyük uygun birimle (gelecek tarih "az önce" sayılır). */
+export function elapsedSince(from: string, now: Date): Elapsed {
+  const minutes = Math.floor((now.getTime() - Date.parse(from)) / 60_000);
+  if (!(minutes >= 1)) return { unit: 'justNow', value: 0 };
+  if (minutes < 60) return { unit: 'minutes', value: minutes };
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return { unit: 'hours', value: hours };
+  return { unit: 'days', value: Math.floor(hours / 24) };
+}

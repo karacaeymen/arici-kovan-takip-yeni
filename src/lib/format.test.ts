@@ -1,4 +1,4 @@
-import { formatMobileDigits, formatPhoneNumber } from './format';
+import { elapsedSince, formatMobileDigits, formatPhoneNumber } from './format';
 
 describe('formatMobileDigits', () => {
   it.each([
@@ -24,5 +24,22 @@ describe('formatPhoneNumber', () => {
 
   it('tanımadığı biçimi olduğu gibi bırakır', () => {
     expect(formatPhoneNumber('+4915112345678')).toBe('+4915112345678');
+  });
+});
+
+describe('elapsedSince', () => {
+  const now = new Date('2026-11-22T10:00:00Z');
+
+  it.each([
+    ['2026-11-22T09:59:30Z', { unit: 'justNow', value: 0 }],
+    ['2026-11-22T10:05:00Z', { unit: 'justNow', value: 0 }],
+    ['2026-11-22T09:55:00Z', { unit: 'minutes', value: 5 }],
+    ['2026-11-22T09:00:01Z', { unit: 'minutes', value: 59 }],
+    ['2026-11-22T08:00:00Z', { unit: 'hours', value: 2 }],
+    ['2026-11-21T10:00:01Z', { unit: 'hours', value: 23 }],
+    ['2026-11-19T10:00:00Z', { unit: 'days', value: 3 }],
+    ['geçersiz', { unit: 'justNow', value: 0 }],
+  ])('%s → %j', (from, expected) => {
+    expect(elapsedSince(from, now)).toEqual(expected);
   });
 });

@@ -1,6 +1,8 @@
 {
   "common": {
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "retry": "Tekrar dene",
+    "cancel": "Vazgeç"
   },
   "auth": {
     "login": {
@@ -27,6 +29,76 @@
       "network": "İnternet bağlantısı yok. Bağlanınca tekrar dene.",
       "unavailable": "SMS ile giriş şu an kullanılamıyor. Daha sonra tekrar dene.",
       "unknown": "Bir şeyler ters gitti. Tekrar dene."
+    }
+  },
+  "tabs": {
+    "home": "Ana Sayfa",
+    "settings": "Ayarlar"
+  },
+  "settings": {
+    "account": "Hesap",
+    "signedInAs": "Giriş yapılan numara",
+    "syncStatus": "Senkron durumu",
+    "signOut": "Çıkış yap",
+    "signOutConfirmTitle": "Çıkış yapılsın mı?",
+    "signOutConfirmMessage": "Gönderilmemiş kayıtların telefonda kalır; tekrar giriş yapınca gönderilir.",
+    "signOutFailed": "Çıkış yapılamadı. İnternet bağlantını kontrol edip tekrar dene."
+  },
+  "sync": {
+    "title": "Senkron durumu",
+    "status": {
+      "idle": "Kayıtlar güncel",
+      "syncing": "Kayıtlar gönderiliyor…",
+      "offline": "İnternet yok",
+      "error": "Gönderilemedi",
+      "signedOut": "Oturum kapalı",
+      "updateRequired": "Güncelleme gerekli"
+    },
+    "banner": {
+      "syncing": "Kayıtlar gönderiliyor…",
+      "offline": "İnternet yok. Kayıtların telefonda; bağlantı gelince gönderilecek.",
+      "error": "Kayıtlar gönderilemedi, birazdan tekrar denenecek.",
+      "pendingRetry": "Bazı kayıtlar gönderilemedi, birazdan tekrar denenecek.",
+      "signedOut": "Kayıtları göndermek için tekrar giriş yap.",
+      "updateRequired": "Kayıtları göndermek için uygulamayı güncellemen gerekiyor.",
+      "pendingCount": "{{count}} kayıt bekliyor",
+      "openDetails": "Senkron ayrıntılarını aç"
+    },
+    "lastSynced": {
+      "never": "Henüz senkron yapılmadı",
+      "justNow": "Son senkron: az önce",
+      "minutes": "Son senkron: {{value}} dk önce",
+      "hours": "Son senkron: {{value}} sa önce",
+      "days": "Son senkron: {{value}} gün önce"
+    },
+    "nextRetry": "Bir sonraki deneme kısa süre içinde yapılacak.",
+    "rejected": "{{count}} kayıt sunucu tarafından kabul edilmedi.",
+    "pendingTitle": "Gönderilmeyi bekleyenler",
+    "pendingEmpty": "Bekleyen kayıt yok. Her şey sunucuda.",
+    "pendingSummary": "{{count}} kayıt gönderilmeyi bekliyor",
+    "attempts": "{{count}} kez denendi",
+    "syncNow": "Şimdi senkronla",
+    "tables": {
+      "businesses": "İşletme",
+      "apiaries": "Arılık",
+      "hives": "Kovan",
+      "queens": "Kraliçe",
+      "inspections": "Denetim",
+      "treatments": "İlaçlama",
+      "feedings": "Besleme",
+      "harvests": "Bal sağımı",
+      "relocations": "Taşıma",
+      "tasks": "Görev"
+    },
+    "errors": {
+      "network": "Bağlantı yoktu",
+      "server": "Sunucu hatası",
+      "unauthorized": "Oturum gerekiyordu",
+      "update_required": "Uygulama güncellemesi gerekiyor",
+      "invalid_response": "Sunucu yanıtı anlaşılamadı",
+      "rejected:missing_parent": "Bağlı olduğu kayıt henüz sunucuda değil",
+      "rejected:clock_skew": "Telefonun saati ileri; saat düzelince gönderilecek",
+      "unknown": "Bilinmeyen hata"
     }
   }
 }
