@@ -2,7 +2,8 @@
   "common": {
     "loading": "Yükleniyor…",
     "retry": "Tekrar dene",
-    "cancel": "Vazgeç"
+    "cancel": "Vazgeç",
+    "continue": "Devam"
   },
   "auth": {
     "login": {
@@ -99,6 +100,33 @@
       "rejected:missing_parent": "Bağlı olduğu kayıt henüz sunucuda değil",
       "rejected:clock_skew": "Telefonun saati ileri; saat düzelince gönderilecek",
       "unknown": "Bilinmeyen hata"
+    }
+  },
+  "onboarding": {
+    "progress": "Adım {{current}} / {{total}}",
+    "businessName": {
+      "title": "İşletmenin adı",
+      "subtitle": "Kayıtların bu ad altında tutulur. Sonradan değiştirebilirsin.",
+      "label": "İşletme adı",
+      "placeholder": "Ör. Karaca Arıcılık"
+    },
+    "firstApiary": {
+      "title": "İlk arılığın",
+      "subtitle": "Kovanlarının bulunduğu yere bir ad ver. Konumu ve bölgeyi sonra ekleyebilirsin.",
+      "label": "Arılık adı",
+      "placeholder": "Ör. Yayla Arılığı"
+    },
+    "notifications": {
+      "title": "Bildirimlere izin ver",
+      "subtitle": "Yapılacak işleri (varroa kontrolü, besleme) ve don, fırtına gibi hava uyarılarını zamanında haber verelim.",
+      "allow": "İzin ver",
+      "skip": "Şimdi değil",
+      "later": "İzni daha sonra telefonun ayarlarından da verebilirsin."
+    },
+    "errors": {
+      "name_required": "Bir ad yaz.",
+      "name_too_long": "Ad en fazla 100 karakter olabilir.",
+      "unknown": "Kaydedilemedi. Tekrar dene."
     }
   }
 }
