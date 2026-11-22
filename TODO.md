@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-11-22 (T1.6, T1.7, T1.9 ve T1.8 eklendi)
-- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te; dev/prod'a yükleme T0.6 ayarları bitince), T1.5 (11 repository + ortak çekirdek; saf veri katmanı, cihaz doğrulaması gerektirmez)
-- **Devam eden**: T1.8 (ilk açılış: işletme adı → ilk arılık → bildirim izni, kaldığı adımdan devam; testler yeşil; PR incelemesi bekliyor, T1.9 üzerine kurulu), T1.9 (ayarlar sekmesi, senkron durum ekranı ve sekmelerin başlığındaki senkron şeridi hazır, testler yeşil; PR incelemesi bekliyor, T1.7 üzerine kurulu), T1.7 (telefon + SMS koduyla giriş, oturum kapısı ve geçici tema hazır, testler yeşil; PR incelemesi bekliyor. Cihazda deneme için Supabase'de SMS ile girişin açılması ve bir SMS sağlayıcısı gerekiyor), T1.6 (push/pull/koordinatör + senkron durumu hazır, testler yeşil; PR incelemesi bekliyor. Otomatik tetikleme T1.7'de oturuma bağlandı, cihazda T1.7 ile birlikte doğrulanacak), T0.8 (kısmen: tema değerleri GEÇİCİ, `i18n`, `lib/format` ve `Button` T1.7'de başladı; renkler/yazı tipi Faruk'un tasarımını bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
-- **Sıradaki görev**: T0.8 (Faruk: tasarım gelince GEÇİCİ değerler değiştirilir, kalan saha bileşenleri), T1.3 → T4.1 → T2.1 → T2.2 (Claude). Faruk'un Dönem B işleri (T2.3–) Dönem A kilometre taşından sonra
+- **Son güncelleme**: 2026-11-22 (T1.6, T1.7, T1.9 ve T1.8 `main`'e alındı; T1.3 eklendi)
+- **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; dev/prod'a yükleme T0.6 ayarları bitince), T1.3 (her tablo için işletme bazlı RLS + bağlı kayıtların aynı işletmede olma şartı; 10 pgTAP dosyası), T1.5 (11 repository + ortak çekirdek; saf veri katmanı, cihaz doğrulaması gerektirmez)
+- **Devam eden**: T1.8 (ilk açılış: işletme adı → ilk arılık → bildirim izni, kaldığı adımdan devam; testler yeşil; `main`'de; cihaz doğrulaması bekliyor), T1.9 (ayarlar sekmesi, senkron durum ekranı ve sekmelerin başlığındaki senkron şeridi hazır, testler yeşil; `main`'de; cihaz doğrulaması bekliyor), T1.7 (telefon + SMS koduyla giriş, oturum kapısı ve geçici tema hazır, `main`'de. Yerelde SMS'siz deneme için test numarası `config.toml`'da (+90 555 000 00 01 / 123456); dev'de Phone girişi ve SMS sağlayıcısı panelden açılmalı), T1.6 (push/pull/koordinatör + senkron durumu hazır, `main`'de. Otomatik tetikleme T1.7'de oturuma bağlandı, cihazda T1.7 ile birlikte doğrulanacak), T0.8 (kısmen: tema değerleri GEÇİCİ, `i18n`, `lib/format` ve `Button` T1.7'de başladı; renkler/yazı tipi Faruk'un tasarımını bekliyor), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
+- **Sıradaki görev**: T0.8 (Faruk: tasarım gelince GEÇİCİ değerler değiştirilir, kalan saha bileşenleri), T4.1 → T2.1 → T2.2 (Claude). Faruk'un Dönem B işleri (T2.3–) Dönem A kilometre taşından sonra
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -360,11 +360,12 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.3: RLS politikaları
 - **Açıklama**: Her tablo için işletme bazlı politikalar ayrı migration dosyalarında yazılır. Kullanıcı istekleri Edge Function'larda kullanıcı JWT'li istemciyle yürütülür (service-role değil).
-- **Dosyalar**: `supabase/migrations/<zaman>_rls_<tablo>.sql` (tablo başına), `supabase/tests/database/rls_<tablo>_test.sql`
+- **Dosyalar**: `supabase/migrations/<zaman>_rls_helpers.sql` (politikaların kullandığı `rls_owns_business`, `rls_apiary_in_business`, `rls_hive_in_business`), `supabase/migrations/<zaman>_rls_<tablo>.sql` (tablo başına), `supabase/tests/database/rls_<tablo>_test.sql`, `supabase/config.toml` (yerelde SMS ile kayıt ve test numarası, T1.7 için)
 - **Bağımlılıklar**: T1.2
 - **Kabul Kriterleri**:
-  - [ ] İşletmeler arası veri izolasyonu her tablo için pgTAP ile doğrulanmış
-  - [ ] `sync` fonksiyonu `_shared/db/client.ts`'deki kullanıcı istemcisini kullanır
+  - [x] İşletmeler arası veri izolasyonu her tablo için pgTAP ile doğrulanmış
+  - [x] `sync` fonksiyonu `_shared/db/client.ts`'deki kullanıcı istemcisini kullanır
+- **Not**: Her tabloda okuma/ekleme/güncelleme politikası var, silme politikası yok (silme `deleted_at` ile). Alt kayıtların bağlı olduğu arılık/kovan başka işletmeye aitse yazma `42501` (`forbidden`, kalıcı red) ile reddedilir; bağlı kayıt henüz sunucuda yoksa RLS değil yabancı anahtar hatası (`23503` → `missing_parent`, istemci tekrar dener) döner. Başkasının kaydının kimliğiyle gönderim de `42501` alır, kayıt ezilmez.
 
 ### Görev T1.4: Yerel SQLite şeması (Drizzle)
 - **Açıklama**: Drizzle şeması her tablo için ayrı dosyada tanımlanır; outbox tablosu dahil.

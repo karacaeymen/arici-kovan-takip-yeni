@@ -41,13 +41,13 @@ Dönem A'nın kodunu **Eymen** (Claude ile) ve **Faruk** paralel yazar. Ayrınt�
 | 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Faruk'un tasarımından) | Faruk | 🔄 kısmen (T1.7'de GEÇİCİ tema, i18n, Button); tasarım bekliyor |
 | 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ✅ |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | ✅ |
-| 11 | **T1.3** RLS politikaları | Claude | |
+| 11 | **T1.3** RLS politikaları | Claude | ✅ |
 | 12 | **T1.4** Yerel SQLite şeması (Drizzle) | Faruk | ✅ (telefonda açılış doğrulaması bekliyor) |
 | 13 | **T1.5** Repository katmanı | Faruk | ✅ |
-| 14 | **T1.6** İstemci senkron motoru | Faruk | 🔄 kod hazır, PR incelemesi bekliyor |
-| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.6 üzerine kurulu) |
-| 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.7 üzerine kurulu) |
-| 17 | **T1.8** Onboarding | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.9 üzerine kurulu) |
+| 14 | **T1.6** İstemci senkron motoru | Faruk | ✅ (cihaz doğrulaması bekliyor) |
+| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | ✅ (cihaz doğrulaması bekliyor) |
+| 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | ✅ (cihaz doğrulaması bekliyor) |
+| 17 | **T1.8** Onboarding | Faruk | ✅ (cihaz doğrulaması bekliyor) |
 | 18 | **T4.1** Referans içerik servisi | Claude | |
 | 19 | **T2.1** Konum izni servisi *(T2.2 buna bağlı olduğu için Dönem A'ya alındı)* | Claude | |
 | 20 | **T2.2** Arılık yönetimi — **örnek özellik**: Dönem B'de her yeni özellik buna bakılarak yazılır | Claude | |
