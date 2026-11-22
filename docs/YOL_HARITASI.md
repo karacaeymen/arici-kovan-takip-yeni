@@ -38,14 +38,14 @@ Dönem A'nın kodunu **Eymen** (Claude ile) ve **Faruk** paralel yazar. Ayrınt�
 | 5 | **T0.5** EAS + mağaza hesapları (önce **K2** kararı) | Eymen (elle) | 🔄 ayarlar hazır, hesaplar en sona |
 | 6 | **T0.7** Sentry + config modülü | Eymen (elle) | 🔄 kod hazır, Sentry hesabı en sona |
 | 7 | **T0.6** CI hattı | Eymen (elle) | 🔄 iş akışları hazır, GitHub ayarları bekliyor |
-| 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Faruk'un tasarımından) | Faruk | ⏸️ tasarım bekliyor |
+| 8 | **T0.8** Tema, i18n, saha bileşenleri (renkler/yazı tipleri Faruk'un tasarımından) | Faruk | 🔄 kısmen (T1.7'de GEÇİCİ tema, i18n, Button); tasarım bekliyor |
 | 9 | **T1.1** Domain varlıkları + zod şemaları | Claude | ✅ |
 | 10 | **T1.2** Supabase şeması + `sync` fonksiyonu | Claude | ✅ |
 | 11 | **T1.3** RLS politikaları | Claude | |
 | 12 | **T1.4** Yerel SQLite şeması (Drizzle) | Faruk | ✅ (telefonda açılış doğrulaması bekliyor) |
 | 13 | **T1.5** Repository katmanı | Faruk | ✅ |
 | 14 | **T1.6** İstemci senkron motoru | Faruk | 🔄 kod hazır, PR incelemesi bekliyor |
-| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | |
+| 15 | **T1.7** Kimlik doğrulama (telefon + OTP) | Faruk | 🔄 kod hazır, PR incelemesi bekliyor (T1.6 üzerine kurulu) |
 | 16 | **T1.9** Ayarlar + senkron durum ekranı | Faruk | |
 | 17 | **T1.8** Onboarding | Faruk | |
 | 18 | **T4.1** Referans içerik servisi | Claude | |

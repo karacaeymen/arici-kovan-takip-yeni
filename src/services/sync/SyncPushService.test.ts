@@ -10,6 +10,8 @@ import {
 
 import { createSyncPushService, SyncRejectedError } from './SyncPushService';
 
+// Telefondaki güvenli depo Node'da yok; Supabase istemcisi yüklenirken sahtesi kullanılır.
+jest.mock('expo-secure-store', () => ({}));
 jest.mock('expo-sqlite', () => ({ openDatabaseSync: jest.fn() }));
 
 type Status = Pick<PushResult, 'status' | 'reason'>;
