@@ -1,5 +1,5 @@
 // Jest iki proje olarak çalışır (TODO.md T0.3):
-//  - unit: saf Node ortamı → src/domain, src/lib, servisler, repository'ler, API istemcileri
+//  - unit: saf Node ortamı → src/domain, src/lib, src/i18n, servisler, repository'ler, API istemcileri
 //  - ui:   jest-expo + React Native Testing Library → bileşenler, Screen'ler, hook'lar
 // babel-preset-expo, expo paketinin içinden çözülür (kökte ayrı kurulu değil)
 const babelPresetExpo = require.resolve('babel-preset-expo', {
@@ -12,6 +12,7 @@ const UNIT_TESTS = [
   '<rootDir>/app.config.test.ts',
   '<rootDir>/src/domain/**/*.test.ts',
   '<rootDir>/src/lib/**/*.test.ts',
+  '<rootDir>/src/i18n/**/*.test.ts',
   '<rootDir>/src/services/**/*.test.ts',
   '<rootDir>/src/features/*/services/**/*.test.ts',
   '<rootDir>/src/data/**/*.test.ts',

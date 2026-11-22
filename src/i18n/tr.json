@@ -1,0 +1,32 @@
+{
+  "common": {
+    "loading": "Yükleniyor…"
+  },
+  "auth": {
+    "login": {
+      "title": "Telefonla giriş",
+      "subtitle": "Telefonuna SMS ile 6 haneli bir kod göndereceğiz.",
+      "phoneLabel": "Cep telefonu numarası",
+      "phonePlaceholder": "5XX XXX XX XX",
+      "submit": "Kod gönder"
+    },
+    "otp": {
+      "title": "Kodu gir",
+      "subtitle": "{{phone}} numarasına gönderilen 6 haneli kodu yaz.",
+      "codeLabel": "Doğrulama kodu",
+      "submit": "Doğrula",
+      "resend": "Kodu tekrar gönder",
+      "resendIn": "{{seconds}} sn sonra tekrar gönderebilirsin",
+      "resent": "Yeni kod gönderildi.",
+      "changePhone": "Numarayı değiştir"
+    },
+    "errors": {
+      "invalid_phone": "Geçerli bir cep telefonu numarası yaz (5XX XXX XX XX).",
+      "invalid_code": "Kod yanlış ya da süresi dolmuş. Tekrar dene ya da yeni kod iste.",
+      "rate_limited": "Çok sık deneme yapıldı. Biraz bekleyip tekrar dene.",
+      "network": "İnternet bağlantısı yok. Bağlanınca tekrar dene.",
+      "unavailable": "SMS ile giriş şu an kullanılamıyor. Daha sonra tekrar dene.",
+      "unknown": "Bir şeyler ters gitti. Tekrar dene."
+    }
+  }
+}

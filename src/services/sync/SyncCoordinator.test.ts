@@ -14,6 +14,8 @@ import { createSyncPushService, type PushSummary } from './SyncPushService';
 import { createSyncStore } from './syncStore';
 import type { SyncTriggerReason } from './syncTriggers';
 
+// Telefondaki güvenli depo Node'da yok; Supabase istemcisi yüklenirken sahtesi kullanılır.
+jest.mock('expo-secure-store', () => ({}));
 jest.mock('expo-sqlite', () => ({ openDatabaseSync: jest.fn() }));
 
 const T0 = '2026-11-01T08:00:00.000Z';

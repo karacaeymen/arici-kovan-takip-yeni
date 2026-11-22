@@ -19,6 +19,9 @@ import {
   toSyncError,
 } from './sync.client';
 
+// Telefondaki güvenli depo Node'da yok; Supabase istemcisi yüklenirken sahtesi kullanılır.
+jest.mock('expo-secure-store', () => ({}));
+
 const ID_1 = '0b6f2d3e-6f0a-4c1e-9d2b-1a2b3c4d5e01';
 const ID_2 = '0b6f2d3e-6f0a-4c1e-9d2b-1a2b3c4d5e02';
 const change = (id: string, table: SyncChange['table'] = 'hives'): SyncChange => ({
