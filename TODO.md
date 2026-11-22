@@ -205,10 +205,10 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 ---
 
 ## Güncel Durum (her görev sonunda güncellenir)
-- **Son güncelleme**: 2026-11-21 (T1.2 ve T1.5 eklendi; T1.6 Faruk'a verildi)
+- **Son güncelleme**: 2026-11-22 (T1.6 eklendi)
 - **Tamamlanan**: T0.1 (iskelet), T0.2 (ESLint katman kuralları, Prettier, husky + lint-staged), T0.3 (Jest unit/ui, Clock, deno test), T0.4 (Supabase yerel + dev `uakawqlztstbmmyimmjy` + prod `cnmycgkyofuyucscjxwm`, Frankfurt; `health` üç ortamda 200), T1.1 (domain varlıkları + zod şemaları; saf TypeScript, cihaz doğrulaması gerektirmez), T1.2 (10 tablo + `sync` fonksiyonu; RLS politikaları T1.3'te; dev/prod'a yükleme T0.6 ayarları bitince), T1.5 (11 repository + ortak çekirdek; saf veri katmanı, cihaz doğrulaması gerektirmez)
-- **Devam eden**: T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
-- **Sıradaki görev**: T1.6 (Faruk: istemci senkron motoru), T1.3 (Claude: RLS politikaları), T0.8 (Faruk: tasarım gelince)
+- **Devam eden**: T1.6 (push/pull/koordinatör + senkron durumu hazır, testler yeşil; PR incelemesi bekliyor. `start()` oturum açılınca T1.7'de bağlanacak, otomatik tetikleme cihazda o zaman doğrulanır), T1.4 (`main`'de; yalnızca telefonda açılış doğrulaması bekliyor), T0.5 (eas.json + app.config.ts hazır; Expo/Apple/Google hesapları ve K2 en sona bırakıldı), T0.7 (kod hazır; Sentry etiket filtresi hesap açılınca doğrulanacak), T0.6 (iş akışları hazır; GitHub'da branch protection, `dev`/`prod` Environments ve Supabase gizli değerleri bekliyor; bunlar olmadan `Deploy Supabase` iş akışı hata verir)
+- **Sıradaki görev**: T1.7 (Faruk: telefon + OTP ile giriş), T1.3 (Claude: RLS politikaları), T0.8 (Faruk: tasarım gelince)
 - **Tasarım kararı**: Renk/tipografi değerleri Claude Designer çıktısına göre `src/theme/*.ts` dosyalarına işlenecektir.
 
 ---
@@ -388,12 +388,13 @@ Sınırı aşan dosya bölünür; istisna gerekiyorsa gerekçesiyle `eslint-disa
 
 ### Görev T1.6: Senkron motoru (istemci)
 - **Açıklama**: Push, pull ve koordinasyon ayrı servislerdir. Backend ile iletişim tek bir API istemcisi üzerindendir. Senkron durumu reaktif bir store'da tutulur.
-- **Dosyalar**: `src/data/supabase/client.ts`, `src/data/api/sync.client.ts`, `src/services/sync/{SyncPushService,SyncPullService,SyncCoordinator}.ts`, `src/services/sync/syncStore.ts`, her biri için `.test.ts`
+- **Dosyalar**: `src/data/supabase/client.ts`, `src/data/api/sync.client.ts`, `src/services/sync/{SyncPushService,SyncPullService,SyncCoordinator}.ts`, `src/services/sync/syncStore.ts`, her biri için `.test.ts`; ayrıca `src/services/sync/syncTriggers.ts` (ağ ve uygulama öne gelme olayları, `expo-network` + `AppState`), `src/services/sync/index.ts` (gerçek bağımlılıklarla kurulum: `getSyncCoordinator()`), `src/data/repositories/SyncStateRepository.ts` (`sync_state` imleci; servisler `data/db`'ye erişemediği için), `src/data/repositories/index.ts` (`createRepositories`/`getRepositories`), `src/test-utils/sync-fixtures.ts`, `package.json` (`@supabase/supabase-js`, `expo-network`)
 - **Bağımlılıklar**: T1.2, T1.3, T1.5
 - **Kabul Kriterleri**:
-  - [ ] Senkron iş mantığı UI bileşenlerinden tamamen soyutlanmış; hiçbir bileşen senkron servislerini doğrudan import etmez
-  - [ ] Kuyruk yönetimi, yeniden deneme (üstel bekleme) ve LWW çakışma çözümü testli
-  - [ ] Ağ geldiğinde/uygulama öne geldiğinde senkron otomatik tetiklenir
+  - [x] Senkron iş mantığı UI bileşenlerinden tamamen soyutlanmış; hiçbir bileşen senkron servislerini doğrudan import etmez
+  - [x] Kuyruk yönetimi, yeniden deneme (üstel bekleme) ve LWW çakışma çözümü testli
+  - [ ] Ağ geldiğinde/uygulama öne geldiğinde senkron otomatik tetiklenir (tetikleyiciler hazır ve testli; uygulamada `getSyncCoordinator().start()` oturum açılınca T1.7'de çağrılır, cihazda o zaman doğrulanır)
+- **Notlar** (T1.7 ve T1.9 için): Motor `getSyncCoordinator()` (`src/services/sync/index.ts`) ile alınır. `start()` ilk senkronu yapar ve ağ gelince/uygulama öne gelince yeniden senkronlar; `stop()` dinlemeyi ve bekleyen denemeyi bırakır; `sync()` elle tetikler (aynı anda tek senkron; sürerken gelen istek bitince bir kez daha çalışır). Oturum açılınca `start()`, kapanınca `stop()` çağrılmalı (T1.7); oturum yokken sunucu 401 döner ve durum `signedOut` olur. Durum `syncStore`'dadır (`getSnapshot`/`subscribe`, `useSyncExternalStore` ile uyumlu; T1.9 `useSyncStatus`): `status` (`idle`, `syncing`, `offline`, `error`, `signedOut`, `updateRequired`), `issue`, `lastSyncedAt`, `failureCount`, `nextRetryAt`, `rejectedCount`. Metin tutmaz; kullanıcıya gösterilecek metin i18n'den gelir. Bekleyen değişiklik sayısı için `OutboxRepository.watchPending()`. Push sonuçları: `applied`/`stale` kuyruktan çıkar; `missing_parent` ve `clock_skew` kuyrukta kalıp tekrar denenir; diğer redler kalıcıdır, kuyruktan çıkar ve Sentry'ye gider. Yeniden deneme: 2 sn, 4 sn, 8 sn… en fazla 5 dk; bağlantı yokken deneme yapılmaz, ağ gelince denenir. Sunucu 426 dönerse senkron durur (`updateRequired`).
 
 ### Görev T1.7: Kimlik doğrulama servisi ve ekranları
 - **Açıklama**: Telefon + OTP ile giriş. Oturum yönetimi `AuthService`'te, ekranlar ve alt bileşenler ayrı dosyalarda.
