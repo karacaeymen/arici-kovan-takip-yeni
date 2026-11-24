@@ -1,10 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-
+import type { IconName } from '../../../components/ui/Button/Button';
+import { type BannerTone, OfflineBanner } from '../../../components/ui/OfflineBanner/OfflineBanner';
 import { t } from '../../../i18n';
-import { colors, MIN_TOUCH_SIZE, spacing, typography } from '../../../theme';
 
 // Ekranın üstündeki senkron şeridi (TODO.md T1.9). Yalnızca props alır; durumu bilen
-// `useSyncStatus`'tur. Her şey yolundayken (idle) görünmez.
+// `useSyncStatus`'tur. Her şey yolundayken (idle) görünmez. Görünümü ortak `OfflineBanner`'dır;
+// ton ve ikonlar docs/tasarim/prototip.html "Senkron şeridi" bölümünden.
 
 export type SyncBannerStatus =
   'idle' | 'syncing' | 'offline' | 'error' | 'signedOut' | 'updateRequired';
@@ -17,14 +17,12 @@ export interface SyncBannerProps {
   onPress?: () => void;
 }
 
-type Tone = 'info' | 'warning' | 'danger';
-
-const TONE: Record<Exclude<SyncBannerStatus, 'idle'>, Tone> = {
-  syncing: 'info',
-  offline: 'warning',
-  error: 'warning',
-  signedOut: 'warning',
-  updateRequired: 'danger',
+const LOOK: Record<Exclude<SyncBannerStatus, 'idle'>, { tone: BannerTone; icon: IconName }> = {
+  syncing: { tone: 'info', icon: 'sync' },
+  offline: { tone: 'neutral', icon: 'wifi-off' },
+  error: { tone: 'warning', icon: 'sync-alert' },
+  updateRequired: { tone: 'warning', icon: 'cellphone-arrow-down' },
+  signedOut: { tone: 'danger', icon: 'login' },
 };
 
 function bannerMessage(status: Exclude<SyncBannerStatus, 'idle'>, issue?: string | null) {
@@ -34,47 +32,15 @@ function bannerMessage(status: Exclude<SyncBannerStatus, 'idle'>, issue?: string
 
 export function SyncBanner({ status, issue, pendingCount, onPress }: SyncBannerProps) {
   if (status === 'idle') return null;
-  const tone = TONE[status];
-  const message = bannerMessage(status, issue);
   const showCount = pendingCount > 0 && status !== 'syncing';
-
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={message}
-      accessibilityHint={t('sync.banner.openDetails')}
-      accessibilityLiveRegion="polite"
+    <OfflineBanner
+      {...LOOK[status]}
+      message={bannerMessage(status, issue)}
+      detail={showCount ? t('sync.banner.pendingCount', { count: pendingCount }) : null}
+      actionLabel={t('sync.banner.details')}
       onPress={onPress}
-      disabled={!onPress}
-      style={({ pressed }) => [styles.banner, styles[tone], pressed && styles.pressed]}
-    >
-      <View style={styles.texts}>
-        <Text style={[styles.message, styles[`${tone}Text`]]}>{message}</Text>
-        {showCount ? (
-          <Text style={[styles.count, styles[`${tone}Text`]]}>
-            {t('sync.banner.pendingCount', { count: pendingCount })}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
+      hint={t('sync.banner.openDetails')}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  banner: {
-    minHeight: MIN_TOUCH_SIZE,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  texts: { gap: spacing.xs },
-  pressed: { opacity: 0.8 },
-  info: { backgroundColor: colors.infoBackground },
-  warning: { backgroundColor: colors.warningBackground },
-  danger: { backgroundColor: colors.dangerBackground },
-  infoText: { color: colors.info },
-  warningText: { color: colors.warning },
-  dangerText: { color: colors.danger },
-  message: { ...typography.body, fontWeight: '600' },
-  count: { ...typography.caption },
-});

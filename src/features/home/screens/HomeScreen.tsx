@@ -1,11 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-// İskelet ekran. Metinler T0.8'de i18n'e, renkler src/theme'e taşınacak;
-// bugünün görevleri T4.7'de eklenecek.
+import { AppText } from '../../../components/ui/AppText/AppText';
+import { t } from '../../../i18n';
+import { colors, spacing } from '../../../theme';
+
+// İskelet ekran. Bugünün görevleri T4.7'de eklenecek.
 export function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Arıcı Kovan Takip</Text>
+      <AppText variant="title" header align="center">
+        {t('app.name')}
+      </AppText>
     </View>
   );
 }
@@ -15,9 +20,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
+    padding: spacing.screen,
+    backgroundColor: colors.background,
   },
 });

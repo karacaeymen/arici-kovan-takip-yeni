@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     gap: spacing.xs,
   },
-  table: { ...typography.body, fontWeight: '600', color: colors.text },
+  table: { ...typography.bodyStrong, lineHeight: 24, color: colors.text },
   detail: { ...typography.caption, color: colors.textMuted },
   empty: { ...typography.body, color: colors.textMuted },
 });

@@ -3,7 +3,8 @@
     "loading": "Yükleniyor…",
     "retry": "Tekrar dene",
     "cancel": "Vazgeç",
-    "continue": "Devam"
+    "continue": "Devam",
+    "close": "Kapat"
   },
   "auth": {
     "login": {
@@ -63,7 +64,8 @@
       "signedOut": "Kayıtları göndermek için tekrar giriş yap.",
       "updateRequired": "Kayıtları göndermek için uygulamayı güncellemen gerekiyor.",
       "pendingCount": "{{count}} kayıt bekliyor",
-      "openDetails": "Senkron ayrıntılarını aç"
+      "openDetails": "Senkron ayrıntılarını aç",
+      "details": "Ayrıntılar"
     },
     "lastSynced": {
       "never": "Henüz senkron yapılmadı",
@@ -127,6 +129,21 @@
       "name_required": "Bir ad yaz.",
       "name_too_long": "Ad en fazla 100 karakter olabilir.",
       "unknown": "Kaydedilemedi. Tekrar dene."
+    }
+  },
+  "app": {
+    "name": "Arıcı Kovan Takip"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "message": "Kayıtlarınız telefonda güvende. Tekrar deneyin; sorun sürerse uygulamayı yeniden açın.",
+    "retry": "Tekrar dene"
+  },
+  "ui": {
+    "stepper": {
+      "decrease": "{{label}} azalt",
+      "increase": "{{label}} artır",
+      "empty": "–"
     }
   }
 }

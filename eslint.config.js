@@ -54,13 +54,15 @@ const policies = [
   {
     // Rota yalnızca Screen render eder. İstisna (T0.7): _layout dosyaları hata ekranını ve
     // hata izlemeyi bağlar. İstisna (T1.4): kök _layout, yerel migration'lar bitene kadar
-    // ekranları bekleten DatabaseGate'i bağlar.
+    // ekranları bekleten DatabaseGate'i bağlar. İstisna (T0.8): kök _layout, yazı tipini yükleyen
+    // FontGate'i bağlar.
     from: is('route'),
     allow: to(
       is('screen'),
       is('ui', { fileInternalPath: 'ErrorBoundary/**' }),
       is('lib', { fileInternalPath: 'observability/**' }),
       is('db', { fileInternalPath: 'DatabaseGate.tsx' }),
+      is('theme', { fileInternalPath: 'FontGate.tsx' }),
     ),
   },
   {

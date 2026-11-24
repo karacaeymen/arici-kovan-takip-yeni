@@ -12,7 +12,7 @@ describe('SettingsMenuItem', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Senkron durumu, Kayıtlar güncel' }));
 
     expect(onPress).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('›')).toBeOnTheScreen();
+    expect(screen.getByTestId('icon-chevron-right')).toBeOnTheScreen();
   });
 
   it('tehlikeli eylemde ok göstermez; devre dışıyken basılamaz', async () => {
@@ -26,6 +26,6 @@ describe('SettingsMenuItem', () => {
 
     expect(button).toBeDisabled();
     expect(onPress).not.toHaveBeenCalled();
-    expect(screen.queryByText('›')).toBeNull();
+    expect(screen.queryByTestId('icon-chevron-right')).toBeNull();
   });
 });

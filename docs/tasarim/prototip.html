@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kovan Takip · Tasarım Prototipi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Material Community Icons (Expo'daki MaterialCommunityIcons ile aynı adlar) -->
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
+<style>
+/* =====================================================================
+   1. TASARIM DEĞERLERİ  (uygulamaya aktarılacak tek kaynak)
+   1 px = 1 dp. Ad eşlemesi: --color-primary-pressed  ->  colors.primaryPressed
+   ===================================================================== */
+:root{
+  /* Renkler: marka */
+  --color-primary:#F7B618;          /* bal sarısı: birincil düğme, seçili seçenek, etkin sekme */
+  --color-primary-pressed:#E09E00;  /* birincil düğme basılı */
+  --color-on-primary:#1F1709;       /* bal zemin üstündeki yazı ve ikon */
+  --color-primary-border:#9A6A00;   /* bal dolgulu öğelerin 1,5 px kenarlığı */
+  --color-primary-soft:#FFF2C7;     /* kovan plakası zemini, vurgulu satır */
+  --color-secondary:#5E3A12;        /* kestane: metin düğmesi, bağlantı, geri, onay kutusu */
+  --color-secondary-pressed:#452908;
+  --color-on-secondary:#FFFFFF;
+
+  /* Renkler: zemin ve çizgi */
+  --color-background:#FBF7EE;       /* ekran zemini */
+  --color-surface:#FFFFFF;          /* kart, liste, giriş kutusu */
+  --color-surface-alt:#F2EBDD;      /* basılı zemin, çevrimdışı şeridi */
+  --color-border:#DCD2C0;           /* ince ayırıcı, kart kenarı */
+  --color-border-strong:#857659;    /* dokunulabilir öğe kenarlığı (3:1 üstü) */
+
+  /* Renkler: metin */
+  --color-text:#1F1709;
+  --color-text-muted:#5A4F3E;
+  --color-text-disabled:#9C927F;
+  --color-disabled-bg:#EDE7DA;
+
+  /* Renkler: durum (her biri ikon + metinle birlikte kullanılır) */
+  --color-success:#1B6E3A;  --color-success-bg:#E3F3E6;
+  --color-warning:#A14B00;  --color-warning-bg:#FFEAD2;
+  --color-danger:#B3261E;   --color-danger-bg:#FCE6E3;
+  --color-danger-pressed:#8F1D17;   --color-on-danger:#FFFFFF;
+  --color-info:#1B5E9E;     --color-info-bg:#E2EDF9;
+
+  /* Renkler: kraliçe işareti (uluslararası standart, sabit) */
+  --color-queen-white:#FFFFFF;   /* yıl sonu 1, 6 */
+  --color-queen-yellow:#FFDD00;  /* 2, 7 */
+  --color-queen-red:#E0281E;     /* 3, 8 */
+  --color-queen-green:#17803C;   /* 4, 9 */
+  --color-queen-blue:#1F6FD0;    /* 5, 0 */
+
+  --color-scrim:rgba(31,23,9,.55);
+
+  /* Yazı */
+  --font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-regular:400; --font-semibold:600; --font-bold:700;
+
+  /* Boşluk ölçeği */
+  --space-4:4px; --space-8:8px; --space-12:12px; --space-16:16px;
+  --space-20:20px; --space-24:24px; --space-32:32px; --space-40:40px;
+  --screen-padding:20px;
+
+  /* Köşe */
+  --radius-sm:8px;    /* onay kutusu, iskelet, küçük iç öğe */
+  --radius-md:12px;   /* bütün kontroller: düğme, giriş, sayaç, seçenek, uyarı */
+  --radius-lg:16px;   /* kart, liste grubu, alt sayfa üst köşeleri */
+  --radius-full:999px;/* yalnızca kraliçe diski, anahtar, sekme hapı */
+
+  /* Dokunma ve yükseklikler */
+  --touch-min:56px; --button-height:60px; --input-height:60px; --tabbar-height:68px;
+
+  /* Gölge: kartlarda yok. Yalnızca üstte yüzen iki öğe için. */
+  --shadow-sheet:0 -4px 16px rgba(31,23,9,.16);  /* Android elevation 12 */
+  --shadow-toast:0 4px 12px rgba(31,23,9,.20);   /* Android elevation 6 */
+}
+
+/* ===================== Pano (belge) görünümü: uygulamaya ait değil ===================== */
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-family);font-size:18px;line-height:26px;color:var(--color-text);background:#E8E3D9;-webkit-font-smoothing:antialiased}
+.board{max-width:1780px;margin:0 auto;padding:0 32px 120px}
+.board-head{padding:48px 0 20px;max-width:900px}
+.board-head .eyebrow{font-size:16px;font-weight:600;color:var(--color-text-muted)}
+.board-head h1{font-size:40px;line-height:46px;font-weight:700;letter-spacing:-.4px;margin:8px 0 12px;text-wrap:balance}
+.board-head p.lede{color:var(--color-text-muted)}
+.board-nav{position:sticky;top:0;z-index:30;background:#E8E3D9;border-bottom:1px solid #CFC7B8;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:8px 0}
+.board-nav a{padding:10px 14px;border-radius:8px;color:var(--color-text);text-decoration:none;font-weight:600;font-size:16px;white-space:nowrap}
+.board-nav a:hover{background:#DAD3C6}
+.bs{padding:64px 0 8px;scroll-margin-top:60px}
+.bs>h2{font-size:30px;line-height:36px;font-weight:700;letter-spacing:-.2px}
+.bs>h3{font-size:22px;line-height:28px;font-weight:700;margin-top:40px}
+.bs>.lede{max-width:74ch;color:var(--color-text-muted);margin-top:8px}
+.frames{display:flex;flex-wrap:wrap;gap:44px 32px;margin-top:28px;align-items:flex-start}
+.fr{width:394px;max-width:100%}
+.cap{font-size:17px;line-height:24px;font-weight:700;margin-bottom:10px;min-height:48px}
+.cap small{display:block;font-size:15px;line-height:20px;font-weight:400;color:var(--color-text-muted)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:24px}
+.note{background:#F4F0E8;border:1px solid #CFC7B8;border-radius:16px;padding:20px}
+.note h4{font-size:18px;line-height:24px;font-weight:700;margin-bottom:8px}
+.note p,.note li{font-size:16px;line-height:23px}
+.note p+p{margin-top:8px}
+.note ul{padding-left:18px}
+.note dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:16px;line-height:23px}
+.note dt{font-weight:700}
+.dial{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:16px}
+.dial b{width:150px}
+.dial span{display:flex;gap:3px}
+.dial i{width:14px;height:14px;border-radius:3px;background:#CFC7B8}
+.dial i.on{background:var(--color-text)}
+table.tk{border-collapse:collapse;width:100%;min-width:860px;margin-top:20px;background:#F4F0E8;border:1px solid #CFC7B8;border-radius:16px;overflow:hidden;font-size:16px;line-height:22px}
+table.tk th{font-size:15px;text-align:left;font-weight:700;color:var(--color-text-muted);padding:12px 16px;border-bottom:1px solid #CFC7B8}
+table.tk td{padding:10px 16px;border-bottom:1px solid #DDD6C9;vertical-align:middle}
+table.tk tr:last-child td{border-bottom:0}
+table.tk code,.note code{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:#E8E3D9;padding:2px 6px;border-radius:5px;white-space:nowrap}
+.sw{width:56px;height:40px;border-radius:8px;border:1px solid #1F170933}
+.tk-wrap{overflow-x:auto}
+.cr{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cr b{font-weight:700}
+.cr .ok{color:var(--color-success)} .cr .low{color:var(--color-text-muted)}
+.measure{display:flex;flex-wrap:wrap;gap:24px 40px;margin-top:20px;align-items:flex-end}
+.measure figure{font-size:15px;line-height:20px;color:var(--color-text-muted);text-align:center}
+.measure .bar{height:28px;background:var(--color-secondary);border-radius:3px;margin:0 auto 8px}
+.measure .box{width:88px;height:64px;background:var(--color-surface);border:1.5px solid var(--color-border-strong);margin:0 auto 8px}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin-top:20px}
+.icons div{display:flex;align-items:center;gap:12px;background:#F4F0E8;border:1px solid #CFC7B8;border-radius:12px;padding:10px 14px;font-size:15px;line-height:20px}
+.icons .mdi{font-size:28px;line-height:1;flex:none}
+.icons b{display:block;font-family:ui-monospace,Consolas,monospace;font-size:14px;font-weight:600}
+.icons span span{color:var(--color-text-muted)}
+
+/* =====================================================================
+   2. UYGULAMA STİLLERİ  (.phone, .panel ve .state içinde geçerli)
+   ===================================================================== */
+.phone{width:394px;height:848px;border:2px solid #2A2114;border-radius:38px;overflow:hidden;background:var(--color-background)}
+.screen{width:390px;height:844px;display:flex;flex-direction:column;position:relative;background:var(--color-background);overflow:hidden}
+.statusbar{height:47px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 9px;font-size:16px;line-height:20px;font-weight:600}
+.statusbar__r{display:flex;gap:5px;font-size:18px}
+.homeind{height:34px;flex:none;display:flex;justify-content:center;align-items:flex-end;padding-bottom:8px}
+.homeind::after{content:"";width:134px;height:5px;border-radius:3px;background:var(--color-text)}
+.homeind--surface{background:var(--color-surface)}
+.content{flex:1;min-height:0;overflow-y:auto;padding:0 var(--screen-padding) 28px;scrollbar-width:thin;scrollbar-color:var(--color-border) transparent}
+.content--center{display:flex;flex-direction:column;justify-content:center}
+.panel,.state{width:394px;max-width:100%;border:2px solid #2A2114;border-radius:22px;background:var(--color-background);padding:20px}
+.states{display:flex;flex-direction:column;gap:14px}
+.st{font-size:15px;line-height:20px;font-weight:600;color:var(--color-text-muted);margin:18px 0 8px}
+.st:first-child{margin-top:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* Metin (AppText) */
+.t-title{font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.2px}
+.t-subtitle{font-size:22px;line-height:28px;font-weight:700}
+.t-body{font-size:18px;line-height:26px;font-weight:400}
+.t-strong{font-size:18px;line-height:26px;font-weight:600}
+.t-helper{font-size:16px;line-height:22px;font-weight:400;color:var(--color-text-muted)}
+.t-label{font-size:15px;line-height:20px;font-weight:600}
+.t-number{font-size:26px;line-height:32px;font-weight:700;font-variant-numeric:tabular-nums}
+.muted{color:var(--color-text-muted)}
+
+/* Üst çubuk */
+.appbar{flex:none;min-height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.appbar__btn{appearance:none;font:inherit;border:0;background:none;min-height:56px;min-width:56px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:var(--radius-md);font-size:17px;line-height:24px;font-weight:600;color:var(--color-secondary);cursor:pointer}
+.appbar__btn .mdi{font-size:26px;line-height:1}
+.appbar__btn:active,.appbar__btn.is-pressed{background:var(--color-surface-alt)}
+.roothead{padding:10px 0 16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.roothead__side{text-align:right;font-size:16px;line-height:22px;font-weight:600;color:var(--color-text-muted)}
+.pagehead{padding:0 0 16px}
+.pagehead .t-helper{margin-top:4px}
+.brand{display:flex;align-items:center;gap:8px;font-size:18px;line-height:24px;font-weight:700;padding:20px 0 28px}
+.brand .mdi{font-size:28px;line-height:1}
+.sec{margin-top:28px}
+.sec__h{font-size:22px;line-height:28px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sec__h small{font-size:16px;line-height:22px;font-weight:400;color:var(--color-text-muted)}
+.grouplabel{font-size:15px;line-height:20px;font-weight:600;color:var(--color-text-muted);margin:24px 4px 8px}
+
+/* Düğme (Button) */
+.btn{appearance:none;font:inherit;min-height:var(--button-height);padding:8px 20px;border-radius:var(--radius-md);border:1.5px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:18px;line-height:24px;font-weight:700;text-align:center;color:var(--color-text);background:none;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.btn .mdi{font-size:24px;line-height:1;flex:none}
+.btn--block{display:flex;width:100%}
+.btn--primary{background:var(--color-primary);color:var(--color-on-primary);border-color:var(--color-primary-border)}
+.btn--primary:active,.btn--primary.is-pressed{background:var(--color-primary-pressed)}
+.btn--secondary{background:var(--color-surface);border-color:var(--color-border-strong)}
+.btn--secondary:active,.btn--secondary.is-pressed{background:var(--color-surface-alt);border-color:var(--color-text)}
+.btn--danger{background:var(--color-danger);color:var(--color-on-danger);border-color:var(--color-danger)}
+.btn--danger:active,.btn--danger.is-pressed{background:var(--color-danger-pressed);border-color:var(--color-danger-pressed)}
+.btn--text{min-height:var(--touch-min);padding:8px 12px;color:var(--color-secondary);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.btn--text:active,.btn--text.is-pressed{background:var(--color-surface-alt)}
+.btn--text.btn--danger-text{color:var(--color-danger)}
+.btn.is-disabled,.btn:disabled{background:var(--color-disabled-bg);color:var(--color-text-disabled);border-color:transparent;cursor:default;text-decoration:none}
+.btn--text.is-disabled{background:none}
+.spinner{flex:none;width:22px;height:22px;border-radius:50%;border:3px solid currentColor;border-right-color:transparent;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Metin kutusu */
+.field{display:block}
+.field+.field{margin-top:20px}
+.field__label{display:block;font-size:16px;line-height:22px;font-weight:600;margin-bottom:8px}
+.input{display:flex;align-items:center;gap:10px;width:100%;min-height:var(--input-height);border:1.5px solid var(--color-border-strong);border-radius:var(--radius-md);background:var(--color-surface);padding:8px 16px;font:inherit;font-size:18px;line-height:26px;color:var(--color-text)}
+.input .mdi{font-size:24px;line-height:1;color:var(--color-text-muted)}
+.input--area{min-height:112px;align-items:flex-start;padding-top:14px}
+.input__ph{color:var(--color-text-muted)}
+.input__suffix{margin-left:auto;color:var(--color-text-muted);font-weight:600}
+.input.is-focus,input.input:focus{outline:0;border-color:var(--color-text);box-shadow:0 0 0 3px var(--color-primary)}
+.input.is-error{border-color:var(--color-danger);box-shadow:0 0 0 1.5px var(--color-danger)}
+.input.is-disabled{background:var(--color-disabled-bg);color:var(--color-text-disabled);border-color:var(--color-border)}
+.field__help{font-size:16px;line-height:22px;color:var(--color-text-muted);margin-top:8px}
+.field__error{display:flex;gap:8px;align-items:flex-start;font-size:16px;line-height:22px;font-weight:600;color:var(--color-danger);margin-top:8px}
+.field__error .mdi{font-size:22px;line-height:22px;flex:none}
+.caret{display:inline-block;width:2px;height:28px;background:var(--color-text);margin-left:2px}
+.phonein{display:flex;min-height:64px;border:1.5px solid var(--color-border-strong);border-radius:var(--radius-md);background:var(--color-surface);overflow:hidden}
+.phonein.is-focus{border-color:var(--color-text);box-shadow:0 0 0 3px var(--color-primary)}
+.phonein.is-error{border-color:var(--color-danger);box-shadow:0 0 0 1.5px var(--color-danger)}
+.phonein__pre{display:flex;align-items:center;padding:0 14px;background:var(--color-surface-alt);border-right:1.5px solid var(--color-border);font-size:22px;font-weight:600}
+.phonein__num{flex:1;display:flex;align-items:center;padding:0 14px;font-size:22px;line-height:28px;font-weight:600;letter-spacing:.6px;font-variant-numeric:tabular-nums}
+.otp{display:flex;gap:10px}
+.otp__box{width:50px;height:64px;flex:none;border:1.5px solid var(--color-border-strong);border-radius:var(--radius-md);background:var(--color-surface);display:flex;align-items:center;justify-content:center;font-size:28px;line-height:34px;font-weight:700;font-variant-numeric:tabular-nums}
+.otp__box.is-active{border-color:var(--color-text);box-shadow:0 0 0 3px var(--color-primary)}
+.otp.is-error .otp__box{border-color:var(--color-danger);box-shadow:0 0 0 1.5px var(--color-danger)}
+.keypad{flex:none;background:#D6D2CA;padding:8px 6px 6px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.keypad span{height:48px;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 1px 0 #9A958C}
+.keypad span.k0{background:none;box-shadow:none}
+.homeind--kb{background:#D6D2CA}
+
+/* Sayaç (Stepper) */
+.stepper{display:inline-flex;align-items:center;flex:none}
+.stepper__btn{appearance:none;font:inherit;width:56px;height:56px;border-radius:var(--radius-md);border:1.5px solid var(--color-border-strong);background:var(--color-surface);color:var(--color-text);display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.stepper__btn:active,.stepper__btn.is-pressed{background:var(--color-surface-alt);border-color:var(--color-text)}
+.stepper__btn.is-disabled{background:var(--color-disabled-bg);color:var(--color-text-disabled);border-color:var(--color-border)}
+.stepper__val{min-width:60px;padding:0 4px;text-align:center;font-size:26px;line-height:32px;font-weight:700;font-variant-numeric:tabular-nums}
+.steprow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:72px;padding:8px 0}
+.steprow+.steprow{border-top:1px solid var(--color-border)}
+.steprow__label{font-size:18px;line-height:24px;font-weight:600}
+.steprow__label small{display:block;font-size:16px;line-height:22px;font-weight:400;color:var(--color-text-muted)}
+
+/* Segmentli seçim ve çip */
+.seg{display:grid;gap:8px}
+.seg--2{grid-template-columns:1fr 1fr}
+.seg--3{grid-template-columns:repeat(3,1fr)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.opt{appearance:none;font:inherit;position:relative;min-height:60px;padding:8px 12px;border-radius:var(--radius-md);border:1.5px solid var(--color-border-strong);background:var(--color-surface);font-size:17px;line-height:22px;font-weight:600;color:var(--color-text);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.chips .opt{min-height:var(--touch-min);padding:8px 24px}
+.opt__check{display:none;position:absolute;top:3px;right:4px;font-size:20px;line-height:1}
+.opt:active,.opt.is-pressed{background:var(--color-surface-alt);border-color:var(--color-text)}
+.opt.is-selected{background:var(--color-primary);border-color:var(--color-primary-border);font-weight:700}
+.opt.is-selected .opt__check{display:block}
+.opt.is-selected:active{background:var(--color-primary-pressed)}
+.opt.is-disabled{background:var(--color-disabled-bg);color:var(--color-text-disabled);border-color:var(--color-border);cursor:default}
+
+/* Anahtar ve onay kutusu */
+.switch{flex:none;width:58px;height:34px;border-radius:var(--radius-full);background:var(--color-border-strong);position:relative}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:28px;height:28px;border-radius:50%;background:#fff}
+.switch.is-on{background:var(--color-success)}
+.switch.is-on::after{left:27px}
+.check{display:flex;gap:12px;align-items:flex-start;min-height:var(--touch-min);padding:10px 0;cursor:pointer;font-size:17px;line-height:24px}
+.check__box{flex:none;width:30px;height:30px;border-radius:var(--radius-sm);border:2px solid var(--color-border-strong);background:var(--color-surface);display:flex;align-items:center;justify-content:center;color:transparent;font-size:24px;line-height:1}
+.check.is-checked .check__box{background:var(--color-secondary);border-color:var(--color-secondary);color:var(--color-on-secondary)}
+
+/* Kart, liste grubu, liste öğesi */
+.card{display:block;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:16px;color:inherit;text-decoration:none}
+.card--press{cursor:pointer}
+.card--press:active,.card--press.is-pressed{background:var(--color-surface-alt)}
+.card+.card{margin-top:12px}
+.group{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden}
+.li{min-height:64px;display:flex;align-items:center;gap:14px;padding:10px 16px;color:inherit;text-decoration:none;cursor:pointer}
+.li+.li{border-top:1px solid var(--color-border)}
+.li:active,.li.is-pressed{background:var(--color-surface-alt)}
+.li__icon{flex:none;width:28px;text-align:center;font-size:26px;line-height:1;color:var(--color-text-muted)}
+.li__main{flex:1;min-width:0}
+.li__title{font-size:18px;line-height:24px;font-weight:600}
+.li__sub{font-size:16px;line-height:22px;color:var(--color-text-muted)}
+.li__value{flex:none;max-width:46%;text-align:right;font-size:16px;line-height:22px;color:var(--color-text-muted)}
+.li__chev{flex:none;font-size:24px;line-height:1;color:var(--color-text-muted);margin-right:-6px}
+.li--danger .li__title,.li--danger .li__icon{color:var(--color-danger)}
+.li.is-disabled{cursor:default}
+.li.is-disabled .li__title,.li.is-disabled .li__icon,.li.is-disabled .li__sub{color:var(--color-text-disabled)}
+
+/* Durum etiketi (ikon + metin) */
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:15px;line-height:20px;font-weight:700}
+.tag .mdi{font-size:20px;line-height:1}
+.tag--danger{color:var(--color-danger)} .tag--warning{color:var(--color-warning)}
+.tag--success{color:var(--color-success)} .tag--info{color:var(--color-info)} .tag--muted{color:var(--color-text-muted)}
+
+/* Kovan plakası (imza öğe) */
+.plate{flex:none;width:56px;height:56px;border-radius:var(--radius-md);background:var(--color-primary-soft);border:1.5px solid var(--color-primary-border);display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.plate--lg{width:76px;height:76px;border-radius:var(--radius-lg);font-size:36px}
+.plate--off{background:var(--color-disabled-bg);border-color:var(--color-border-strong);color:var(--color-text-muted)}
+
+/* Kraliçe rozeti */
+.queen{display:inline-flex;align-items:center;gap:8px;font-size:16px;line-height:22px;font-weight:600}
+.queen__disc{flex:none;width:36px;height:36px;border-radius:var(--radius-full);border:2px solid var(--color-text);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.queen--lg .queen__disc{width:48px;height:48px;font-size:19px}
+.q-white{background:var(--color-queen-white);color:var(--color-text)}
+.q-yellow{background:var(--color-queen-yellow);color:var(--color-text)}
+.q-red{background:var(--color-queen-red);color:#fff}
+.q-green{background:var(--color-queen-green);color:#fff}
+.q-blue{background:var(--color-queen-blue);color:#fff}
+.q-none{background:transparent;border-style:dashed;border-color:var(--color-border-strong);color:var(--color-text-muted)}
+
+/* Uyarı kutusu */
+.alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-md);border:1.5px solid}
+.alert>.mdi{flex:none;font-size:26px;line-height:26px}
+.alert__title{font-size:17px;line-height:24px;font-weight:700}
+.alert__body{font-size:16px;line-height:22px}
+.alert--info{background:var(--color-info-bg);border-color:var(--color-info)} .alert--info>.mdi{color:var(--color-info)}
+.alert--warning{background:var(--color-warning-bg);border-color:var(--color-warning)} .alert--warning>.mdi{color:var(--color-warning)}
+.alert--danger{background:var(--color-danger-bg);border-color:var(--color-danger)} .alert--danger>.mdi{color:var(--color-danger)}
+.alert--success{background:var(--color-success-bg);border-color:var(--color-success)} .alert--success>.mdi{color:var(--color-success)}
+
+/* Senkron şeridi */
+.sync{flex:none;min-height:var(--touch-min);display:flex;align-items:center;gap:12px;padding:8px var(--screen-padding);font-size:16px;line-height:22px;font-weight:600;color:var(--color-text);border-bottom:1px solid var(--color-border);text-decoration:none;cursor:pointer}
+.sync>.mdi{flex:none;font-size:24px;line-height:1}
+.sync__text{flex:1}
+.sync__action{flex:none;font-weight:700;color:var(--color-secondary);text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+.sync--offline{background:var(--color-surface-alt)}
+.sync--syncing{background:var(--color-info-bg)} .sync--syncing>.mdi{color:var(--color-info)}
+.sync--error{background:var(--color-warning-bg)} .sync--error>.mdi{color:var(--color-warning)}
+.sync--update{background:var(--color-warning-bg)} .sync--update>.mdi{color:var(--color-warning)}
+.sync--auth{background:var(--color-danger-bg)} .sync--auth>.mdi{color:var(--color-danger)}
+.sync--ok{min-height:0;padding:0;border:0;background:none;font-weight:400;color:var(--color-text-muted);gap:6px}
+.sync--ok>.mdi{font-size:20px;color:var(--color-success)}
+.sync.is-pressed,.sync:active{filter:brightness(.96)}
+
+/* Boş durum, iskelet, bildirim */
+.empty{text-align:center;padding:24px 8px}
+.empty>.mdi{font-size:64px;line-height:1;color:var(--color-text-muted)}
+.empty h3{font-size:22px;line-height:28px;font-weight:700;margin:12px 0 6px}
+.empty p{color:var(--color-text-muted);margin-bottom:20px}
+.sk{background:var(--color-surface-alt);border-radius:var(--radius-sm)}
+.toast{display:flex;gap:12px;align-items:center;background:var(--color-text);color:#fff;border-radius:var(--radius-md);padding:14px 16px;font-size:17px;line-height:24px;font-weight:600;box-shadow:var(--shadow-toast)}
+.toast .mdi{font-size:26px;line-height:1;color:var(--color-primary);flex:none}
+.toast small{display:block;font-size:15px;line-height:20px;font-weight:400;opacity:.86}
+
+/* Alt çubuk (eylem), sekme çubuğu, alt sayfa */
+.dock{flex:none;display:flex;gap:12px;padding:12px var(--screen-padding);background:var(--color-background);border-top:1px solid var(--color-border)}
+.dock .btn{flex:1;padding:8px 12px}
+.dock .btn--grow{flex:1.5}
+.dock .btn--fit{flex:none}
+.tabbar{flex:none;height:var(--tabbar-height);display:flex;background:var(--color-surface);border-top:1px solid var(--color-border);padding:0 4px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--color-text-muted);text-decoration:none;font-size:15px;line-height:20px;font-weight:600;cursor:pointer}
+.tab__icon{width:60px;height:32px;border-radius:var(--radius-full);border:1.5px solid transparent;display:flex;align-items:center;justify-content:center}
+.tab__icon .mdi{font-size:26px;line-height:1}
+.tab.is-active{color:var(--color-text);font-weight:700}
+.tab.is-active .tab__icon{background:var(--color-primary);border-color:var(--color-primary-border)}
+.tab:active .tab__icon{background:var(--color-surface-alt)}
+.scrim{position:absolute;inset:0;background:var(--color-scrim);z-index:5}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:var(--color-surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sheet);padding:8px 0 0}
+.sheet__grab{width:44px;height:5px;border-radius:3px;background:var(--color-border-strong);margin:2px auto 4px}
+.sheet__head{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 8px 0 var(--screen-padding)}
+.sheet .li{padding-left:var(--screen-padding);padding-right:var(--screen-padding)}
+.sheet .li:first-of-type{border-top:1px solid var(--color-border)}
+
+/* Ekrana özgü küçük düzenler */
+.steps{display:flex;gap:6px;margin-bottom:8px}
+.steps i{flex:1;height:8px;border-radius:4px;background:var(--color-border)}
+.steps i.is-done{background:var(--color-secondary)}
+.weather{display:flex;align-items:center;gap:14px}
+.weather>.mdi:first-child{font-size:44px;line-height:1;flex:none}
+.weather__main{flex:1;min-width:0}
+.task h3,.apiary h3{font-size:20px;line-height:26px;font-weight:700;margin:4px 0 2px}
+.task__actions{display:flex;gap:10px;margin-top:14px}
+.task__actions .btn:first-child{flex:1}
+.apiary{display:flex;align-items:center;gap:12px}
+.apiary__main{flex:1;min-width:0}
+.apiary .tag{margin-top:6px}
+.hiverow{min-height:84px}
+.hivehead{display:flex;gap:16px;align-items:center;padding:4px 0 16px}
+.hivehead h1{font-size:28px;line-height:34px;font-weight:700}
+.frames3{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg)}
+.frames3 div{padding:12px 4px}
+.frames3 div+div{border-left:1px solid var(--color-border)}
+.frames3 b{display:block;font-size:26px;line-height:32px;font-weight:700;font-variant-numeric:tabular-nums}
+.frames3 span{font-size:16px;line-height:22px;color:var(--color-text-muted)}
+.tl__item{display:flex;gap:14px;padding:10px 0;min-height:64px;position:relative;color:inherit;text-decoration:none}
+.tl__icon{flex:none;width:44px;height:44px;border-radius:50%;background:var(--color-surface);border:1.5px solid var(--color-border-strong);display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;position:relative;z-index:1}
+.tl__item:not(:last-child)::before{content:"";position:absolute;left:21px;top:54px;bottom:-10px;width:2px;background:var(--color-border)}
+.tl__main{flex:1;min-width:0}
+.tl__top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.tl__top b{font-size:18px;line-height:24px;font-weight:600}
+.tl__top span{font-size:16px;line-height:22px;color:var(--color-text-muted);white-space:nowrap}
+.tl__main p{font-size:16px;line-height:22px;color:var(--color-text-muted)}
+.context{display:flex;align-items:center;gap:14px;padding:0 0 4px}
+.progress{height:8px;border-radius:4px;background:var(--color-border);overflow:hidden;margin:8px 0 16px}
+.progress i{display:block;height:100%;background:var(--color-secondary)}
+.result{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding:14px 16px;border-radius:var(--radius-md);background:var(--color-surface-alt)}
+.result b{font-size:26px;line-height:32px;font-weight:700;font-variant-numeric:tabular-nums}
+.account h2{font-size:22px;line-height:28px;font-weight:700}
+.syncstat{display:flex;gap:16px;align-items:center}
+.syncstat>.mdi{font-size:48px;line-height:1;flex:none;color:var(--color-warning)}
+.version{text-align:center;font-size:15px;line-height:20px;color:var(--color-text-muted);margin-top:24px}
+
+.toolbar{display:flex;gap:8px;margin-top:12px}
+.toolbar .btn{flex:1 1 auto;padding:8px 10px;gap:6px}
+.li__title,.li__sub{display:block}
+.btn--56{min-height:var(--touch-min)}
+.dock--col{flex-direction:column;gap:4px}
+.dock--col .btn{flex:none}
+.task{padding:16px}
+.task+.task,.task+.li,.li+.task{border-top:1px solid var(--color-border)}
+.li__title--lg{font-size:20px;line-height:26px;font-weight:700}
+.li .tag{margin-top:4px}
+.li .queen__disc{margin-right:-2px}
+
+@media (max-width:480px){
+  .board{padding:0 8px 80px}
+  .board-head h1{font-size:30px;line-height:36px}
+  .bs{padding-top:48px}
+}
+</style>
+</head>
+<body>
+<div class="board">
+
+<header class="board-head">
+  <p class="eyebrow">Kovan Takip · tasarım prototipi · sürüm 0.1 · 390 px, açık tema</p>
+  <h1>Saha ekipmanı gibi: bal sarısı, mürekkep siyahı, büyük ve net.</h1>
+  <p class="lede">Bu sayfa uygulamanın görsel dilini, ortak bileşenlerini ve öncelikli ekranlarını gösterir. Bütün değerler sayfanın başındaki CSS değişkenlerinden gelir; değişkeni değiştirince her ekran birlikte değişir. Telefon çerçevelerinin içi kaydırılabilir; sayaçlar, seçenekler ve anahtarlar dokunulabilir.</p>
+</header>
+
+<nav class="board-nav" aria-label="Bölümler">
+  <a href="#yon">Yön</a><a href="#degerler">Tasarım değerleri</a><a href="#bilesenler">Bileşenler</a>
+  <a href="#giris">Giriş</a><a href="#kurulum">İlk kurulum</a><a href="#ana">Ana Sayfa</a>
+  <a href="#arilik">Arılık ve kovan</a><a href="#denetim">Denetim</a><a href="#ayarlar">Ayarlar ve senkron</a>
+</nav>
+
+<!-- ============================== YÖN ============================== -->
+<section class="bs" id="yon">
+  <h2>Yön</h2>
+  <p class="lede">Arıcı elinde çerçeveyle, güneşin altında ekrana bakıyor. Bu yüzden arayüz bir telefon uygulamasından çok sahada kullanılan bir alete benzemeli: az sayıda büyük parça, hepsi yerinde, hepsi yazıyla adlandırılmış.</p>
+  <div class="notes">
+    <div class="note">
+      <h4>Uygulama okuması</h4>
+      <p>Türk arıcılar için çevrimdışı saha aracı. Kullanıcı orta yaş ve üstü, çoğu zaman tek elle ve güneşte. Dil sıcak ama ciddi. iOS ve Android eşit öncelikli, web yok. İki platformda tek görünüm.</p>
+      <div class="dial"><b>Marka ifadesi 5/10</b><span><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="dial"><b>Hareket 2/10</b><span><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="dial"><b>Yoğunluk 3/10</b><span><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+    </div>
+    <div class="note">
+      <h4>Güvenli seçimler</h4>
+      <ul>
+        <li>Açık, sıcak zemin üstünde mürekkep siyahı metin (16:1).</li>
+        <li>Gölgesiz, kenarlıklı düz yüzeyler. Güneşte gölge zaten görünmez.</li>
+        <li>Tek ikon ailesi (Material Community Icons), her ikonun yanında yazı.</li>
+        <li>Dört sekmeli standart alt çubuk, sistemin kendi geçişleri.</li>
+        <li>Ana eylemler her ekranda altta, sabit bir eylem çubuğunda.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h4>Bilerek alınan riskler</h4>
+      <dl>
+        <dt>1</dt><dd><b>Bal sarısı düğme, üstünde koyu yazı.</b> Kazanç: 9,8:1 kontrast ve net bir arı kimliği. Bedel: sarı, açık zeminde sınırını kaybeder; bu yüzden her bal dolgulu öğede koyu bal kenarlık zorunlu ve uyarı rengi turuncuya kaydı.</dd>
+        <dt>2</dt><dd><b>IBM Plex Sans yazı tipi (sistem yazı tipi yerine).</b> Kazanç: 1, l ve I birbirinden ayrışır, sıfır düz ve tanıdık, iki platformda aynı görünüm. Bedel: uygulamaya üç yazı dosyası eklenir, açılışta yüklenmesi gerekir. Az görenler için tasarlanan Atkinson Hyperlegible de denendi; sıfırı çizgili olduğu için kovan numaralarında yadırgatıcı durdu ve elendi.</dd>
+        <dt>3</dt><dd><b>Kovan plakası.</b> Kovan numarası, kovana çakılan plaka gibi bir kutuda durur. Kazanç: listede göz numarayı hemen bulur. Bedel: satırlar 84 px; ekrana aynı anda 4-5 kovan sığar.</dd>
+        <dt>4</dt><dd><b>Her kontrol 56-60 px, gövde yazısı 18 px.</b> Kazanç: gözlüksüz ve eldivenle kullanılır. Bedel: denetim formu iki ekran boyu, daha çok kaydırma.</dd>
+      </dl>
+    </div>
+    <div class="note">
+      <h4>Brifle çakışan iki nokta</h4>
+      <p><b>Ayarlar sekmesi.</b> Kullandığım tasarım kuralları ayarların sekme olmamasını söyler. Brif ise gizli menü istemiyor ve senkron durumu Ayarlar'ın içinde. Bu kullanıcı için görünür olması daha önemli, o yüzden sekme olarak bıraktım. İstersen üç sekmeye indirip Ayarlar'ı Ana Sayfa başlığına alabiliriz.</p>
+      <p><b>Bildirim izni.</b> İzin ilk kurulumda soruluyor. Sistem penceresi yalnızca kullanıcı açıklamayı okuyup "İzin ver"e basınca açılmalı; ekran buna göre tasarlandı.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== DEĞERLER ============================== -->
+<section class="bs" id="degerler">
+  <h2>Tasarım değerleri</h2>
+  <p class="lede">Uygulamadaki tema dosyası bu tablolardan kurulur. Renk kodları ve kontrast oranları sayfadaki CSS değişkenlerinden canlı okunur.</p>
+
+  <h3>Renkler</h3>
+  <div class="tk-wrap"><table class="tk" id="colorTable">
+    <thead><tr><th></th><th>Ad (uygulama)</th><th>CSS değişkeni</th><th>Kod</th><th>Nerede kullanılır</th><th>Kontrast</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+
+  <h3>Yazı</h3>
+  <p class="lede">IBM Plex Sans (Google Fonts, Türkçe karakterler tam). Kalınlıklar: 400, 600, 700. Expo paketi: <code>@expo-google-fonts/ibm-plex-sans</code>. Büyük harfe çevrilmiş etiket yok; Türkçede i/İ sorununu ve okuma güçlüğünü önler.</p>
+  <div class="tk-wrap"><table class="tk">
+    <thead><tr><th>Stil</th><th>Örnek</th><th>Boyut / satır / kalınlık</th><th>Kullanım</th></tr></thead>
+    <tbody>
+      <tr><td><code>title</code></td><td><span class="t-title">Yayla Arılığı</span></td><td>28 / 34 / 700</td><td>Ekran başlığı. Ekranda bir kez.</td></tr>
+      <tr><td><code>subtitle</code></td><td><span class="t-subtitle">Kraliçe durumu</span></td><td>22 / 28 / 700</td><td>Bölüm başlığı, kart başlığı.</td></tr>
+      <tr><td><code>body</code></td><td><span class="t-body">Kayıtların telefonda saklanır.</span></td><td>18 / 26 / 400</td><td>Gövde metni.</td></tr>
+      <tr><td><code>bodyStrong</code></td><td><span class="t-strong">Arılı çerçeve</span></td><td>18 / 26 / 600</td><td>Liste başlığı, alan adı, vurgulu gövde.</td></tr>
+      <tr><td><code>helper</code></td><td><span class="t-helper">Son ziyaret 3 gün önce</span></td><td>16 / 22 / 400</td><td>Yardımcı metin, alt satır, hata iletisi (600).</td></tr>
+      <tr><td><code>label</code></td><td><span class="t-label">Ana Sayfa</span></td><td>15 / 20 / 600</td><td>Sekme etiketi, durum etiketi, grup başlığı. En küçük yazı.</td></tr>
+      <tr><td><code>button</code></td><td><span style="font-size:18px;line-height:24px;font-weight:700">Kaydet</span></td><td>18 / 24 / 700</td><td>Düğme yazısı. Büyütme sınırı 1,3 kat.</td></tr>
+      <tr><td><code>number</code></td><td><span class="t-number">8</span> <span class="t-number">300</span></td><td>26 / 32 / 700, eş genişlikli rakam</td><td>Sayaç değeri, özet sayısı. Kovan plakasında 24, kod kutusunda 28.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Ölçüler</h3>
+  <div class="measure" aria-label="Boşluk ölçeği">
+    <figure><div class="bar" style="width:4px"></div>4</figure>
+    <figure><div class="bar" style="width:8px"></div>8</figure>
+    <figure><div class="bar" style="width:12px"></div>12</figure>
+    <figure><div class="bar" style="width:16px"></div>16</figure>
+    <figure><div class="bar" style="width:20px"></div>20<br>ekran kenarı</figure>
+    <figure><div class="bar" style="width:24px"></div>24</figure>
+    <figure><div class="bar" style="width:32px"></div>32</figure>
+    <figure><div class="bar" style="width:40px"></div>40</figure>
+    <figure><div class="box" style="border-radius:8px"></div>köşe küçük 8</figure>
+    <figure><div class="box" style="border-radius:12px"></div>köşe orta 12<br>bütün kontroller</figure>
+    <figure><div class="box" style="border-radius:16px"></div>köşe büyük 16<br>kart, alt sayfa</figure>
+  </div>
+  <div class="tk-wrap"><table class="tk">
+    <thead><tr><th>Değer</th><th>Ölçü</th><th>Not</th></tr></thead>
+    <tbody>
+      <tr><td><code>touchMin</code></td><td>56 × 56</td><td>Dokunulabilir her öğenin en küçük alanı. Bitişik iki hedef arasında en az 8.</td></tr>
+      <tr><td><code>buttonHeight</code> / <code>inputHeight</code></td><td>60</td><td>Birincil ve ikincil düğme, metin kutusu, segment. Telefon ve kod kutusu 64.</td></tr>
+      <tr><td><code>tabBarHeight</code></td><td>68 + alt güvenli alan</td><td>İkon 26, etiket 15 / 20.</td></tr>
+      <tr><td><code>screenPadding</code></td><td>20</td><td>Bütün ekranlarda aynı yatay kenar boşluğu.</td></tr>
+      <tr><td>Kenarlık</td><td>1 ve 1,5</td><td>1: kart ve ayırıcı (<code>border</code>). 1,5: dokunulabilir öğe (<code>borderStrong</code>, <code>primaryBorder</code>).</td></tr>
+      <tr><td>Odak halkası</td><td>3</td><td><code>primary</code> renginde dış halka. Uygulamada dış sarmalayıcı View ile; yerleşimi kaydırmaz.</td></tr>
+      <tr><td>İkon boyutu</td><td>20 / 24 / 26 / 64</td><td>Durum etiketi / düğme / liste ve sekme / boş durum.</td></tr>
+      <tr><td><code>shadowSheet</code></td><td>y -4, yayılma 16, %16 <code>text</code></td><td>Yalnızca alt sayfa. Android elevation 12.</td></tr>
+      <tr><td><code>shadowToast</code></td><td>y 4, yayılma 12, %20 <code>text</code></td><td>Yalnızca kayıt bildirimi. Android elevation 6. Kartlarda gölge yok.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>İkonlar</h3>
+  <p class="lede">Set: <b>Material Community Icons</b> (<code>@expo/vector-icons</code> içinde <code>MaterialCommunityIcons</code>). Arı, kovan, arıcı ve QR ikonları bu sette var; özel SVG gerekmedi. Aşağıdaki adların hepsi Expo'nun ikon listesinde doğrulandı. Aynı düzeyde yalnızca çizgi (outline) biçimi kullanılır.</p>
+  <div class="icons">
+    <div><i class="mdi mdi-home-variant-outline"></i><span><b>home-variant-outline</b><span>Sekme: Ana Sayfa</span></span></div>
+    <div><i class="mdi mdi-beehive-outline"></i><span><b>beehive-outline</b><span>Sekme: Arılıklar, kovan sayısı, boş durum</span></span></div>
+    <div><i class="mdi mdi-calendar-month-outline"></i><span><b>calendar-month-outline</b><span>Sekme: Takvim</span></span></div>
+    <div><i class="mdi mdi-cog-outline"></i><span><b>cog-outline</b><span>Sekme: Ayarlar</span></span></div>
+    <div><i class="mdi mdi-bee"></i><span><b>bee</b><span>Uygulama işareti</span></span></div>
+    <div><i class="mdi mdi-qrcode-scan"></i><span><b>qrcode-scan</b><span>QR okut</span></span></div>
+    <div><i class="mdi mdi-clipboard-check-outline"></i><span><b>clipboard-check-outline</b><span>Denetim</span></span></div>
+    <div><i class="mdi mdi-medical-bag"></i><span><b>medical-bag</b><span>İlaçlama</span></span></div>
+    <div><i class="mdi mdi-cup-water"></i><span><b>cup-water</b><span>Besleme</span></span></div>
+    <div><i class="mdi mdi-hexagon-multiple-outline"></i><span><b>hexagon-multiple-outline</b><span>Bal sağımı</span></span></div>
+    <div><i class="mdi mdi-truck-outline"></i><span><b>truck-outline</b><span>Kovan taşıma</span></span></div>
+    <div><i class="mdi mdi-crown-outline"></i><span><b>crown-outline</b><span>Kraliçe</span></span></div>
+    <div><i class="mdi mdi-timer-sand"></i><span><b>timer-sand</b><span>Arınma süresi</span></span></div>
+    <div><i class="mdi mdi-map-marker-outline"></i><span><b>map-marker-outline</b><span>Konum kayıtlı</span></span></div>
+    <div><i class="mdi mdi-map-marker-off-outline"></i><span><b>map-marker-off-outline</b><span>Konum yok</span></span></div>
+    <div><i class="mdi mdi-crosshairs-gps"></i><span><b>crosshairs-gps</b><span>Konumumu kullan</span></span></div>
+    <div><i class="mdi mdi-weather-partly-cloudy"></i><span><b>weather-partly-cloudy</b><span>Hava kartı (duruma göre weather-*)</span></span></div>
+    <div><i class="mdi mdi-wifi-off"></i><span><b>wifi-off</b><span>Şerit: çevrimdışı</span></span></div>
+    <div><i class="mdi mdi-sync"></i><span><b>sync</b><span>Şerit: gönderiliyor, Şimdi senkronla</span></span></div>
+    <div><i class="mdi mdi-sync-alert"></i><span><b>sync-alert</b><span>Şerit: gönderilemedi</span></span></div>
+    <div><i class="mdi mdi-login"></i><span><b>login</b><span>Şerit: oturum kapalı</span></span></div>
+    <div><i class="mdi mdi-cellphone-arrow-down"></i><span><b>cellphone-arrow-down</b><span>Şerit: güncelleme gerekli</span></span></div>
+    <div><i class="mdi mdi-cloud-upload-outline"></i><span><b>cloud-upload-outline</b><span>Bekleyen kayıt</span></span></div>
+    <div><i class="mdi mdi-cloud-check-outline"></i><span><b>cloud-check-outline</b><span>Her şey gönderildi</span></span></div>
+    <div><i class="mdi mdi-information-outline"></i><span><b>information-outline</b><span>Uyarı kutusu: bilgi</span></span></div>
+    <div><i class="mdi mdi-alert-outline"></i><span><b>alert-outline</b><span>Uyarı kutusu: uyarı</span></span></div>
+    <div><i class="mdi mdi-alert-circle-outline"></i><span><b>alert-circle-outline</b><span>Hata, gecikme</span></span></div>
+    <div><i class="mdi mdi-check-circle-outline"></i><span><b>check-circle-outline</b><span>Olumlu durum</span></span></div>
+    <div><i class="mdi mdi-check-circle"></i><span><b>check-circle</b><span>Seçili seçenek işareti, kayıt bildirimi</span></span></div>
+    <div><i class="mdi mdi-check"></i><span><b>check</b><span>Tamamlandı, onay kutusu</span></span></div>
+    <div><i class="mdi mdi-plus"></i><span><b>plus</b><span>Sayaç artır, ekle</span></span></div>
+    <div><i class="mdi mdi-minus"></i><span><b>minus</b><span>Sayaç azalt</span></span></div>
+    <div><i class="mdi mdi-arrow-left"></i><span><b>arrow-left</b><span>Geri</span></span></div>
+    <div><i class="mdi mdi-arrow-right"></i><span><b>arrow-right</b><span>Sonraki kovan</span></span></div>
+    <div><i class="mdi mdi-close"></i><span><b>close</b><span>Vazgeç, Kapat</span></span></div>
+    <div><i class="mdi mdi-chevron-right"></i><span><b>chevron-right</b><span>Yalnızca yeni ekran açan satırda</span></span></div>
+    <div><i class="mdi mdi-chevron-down"></i><span><b>chevron-down</b><span>Alt sayfa açan düğme</span></span></div>
+    <div><i class="mdi mdi-magnify"></i><span><b>magnify</b><span>Arama kutusu</span></span></div>
+    <div><i class="mdi mdi-pencil-outline"></i><span><b>pencil-outline</b><span>Düzenle</span></span></div>
+    <div><i class="mdi mdi-bell-outline"></i><span><b>bell-outline</b><span>Bildirimler</span></span></div>
+    <div><i class="mdi mdi-credit-card-outline"></i><span><b>credit-card-outline</b><span>Abonelik</span></span></div>
+    <div><i class="mdi mdi-file-export-outline"></i><span><b>file-export-outline</b><span>Verileri dışa aktar</span></span></div>
+    <div><i class="mdi mdi-file-document-outline"></i><span><b>file-document-outline</b><span>Hukuki metinler</span></span></div>
+    <div><i class="mdi mdi-logout"></i><span><b>logout</b><span>Çıkış yap</span></span></div>
+    <div><i class="mdi mdi-trash-can-outline"></i><span><b>trash-can-outline</b><span>Hesabı sil</span></span></div>
+    <div><i class="mdi mdi-calendar-today"></i><span><b>calendar-today</b><span>Bugünkü görev</span></span></div>
+  </div>
+</section>
+
+<!-- ============================== BİLEŞENLER ============================== -->
+<section class="bs" id="bilesenler">
+  <h2>Ortak bileşenler</h2>
+  <p class="lede">Her bileşen gerçek genişliğinde (390 px ekran, 20 px kenar boşluğu). Üzerine gelince (hover) hali yok; basılı hal zemin koyulaşmasıdır ve yerleşimi oynatmaz.</p>
+
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Düğme (Button)<small>Yükseklik 60, köşe 12, yazı 18/24 kalın. Uzun yazı iki satıra düşer.</small></figcaption>
+    <div class="panel">
+      <p class="st">Birincil: normal · basılı</p>
+      <div class="row2"><button class="btn btn--primary">Kaydet</button><button class="btn btn--primary is-pressed">Kaydet</button></div>
+      <p class="st">Birincil: devre dışı · yükleniyor</p>
+      <div class="row2"><button class="btn btn--primary is-disabled">Kaydet</button><button class="btn btn--primary"><span class="spinner"></span>Kaydediliyor</button></div>
+      <p class="st">İkincil: normal · basılı · devre dışı</p>
+      <div class="row2"><button class="btn btn--secondary"><i class="mdi mdi-qrcode-scan"></i>QR okut</button><button class="btn btn--secondary is-pressed"><i class="mdi mdi-qrcode-scan"></i>QR okut</button></div>
+      <div style="margin-top:10px"><button class="btn btn--secondary btn--block is-disabled">Şimdi senkronla</button></div>
+      <p class="st">Tehlikeli: normal · basılı</p>
+      <div class="row2"><button class="btn btn--danger"><i class="mdi mdi-trash-can-outline"></i>Sil</button><button class="btn btn--danger is-pressed"><i class="mdi mdi-trash-can-outline"></i>Sil</button></div>
+      <p class="st">Metin düğmesi: normal · basılı · devre dışı</p>
+      <div class="row2"><button class="btn btn--text">Numarayı değiştir</button><button class="btn btn--text is-pressed">Numarayı değiştir</button></div>
+      <button class="btn btn--text is-disabled">45 sn sonra tekrar gönderebilirsin</button>
+      <p class="st">İki satıra düşen yazı</p>
+      <div class="row2"><button class="btn btn--primary">Kovanları başka arılığa taşı</button><button class="btn btn--secondary">Etiketleri yazdır</button></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Metin kutusu<small>Etiket üstte, yardım ve hata altta. Yükseklik 60.</small></figcaption>
+    <div class="panel">
+      <div class="field"><span class="field__label">Arılık adı</span><div class="input">Yayla Arılığı</div><p class="field__help">Normal (dolu).</p></div>
+      <div class="field"><span class="field__label">İşletme adı</span><div class="input is-focus">Karaca Arı<span class="caret"></span></div><p class="field__help">Odak: mürekkep kenar + 3 px bal halka.</p></div>
+      <div class="field"><span class="field__label">Kovan numarası</span><div class="input is-error">24</div><p class="field__error"><i class="mdi mdi-alert-circle-outline"></i>Bu arılıkta 24 numaralı kovan zaten var.</p></div>
+      <div class="field"><span class="field__label">Arınma süresi</span><div class="input is-disabled">14<span class="input__suffix">gün</span></div><p class="field__help">Devre dışı: ürüne göre kendiliğinden dolar.</p></div>
+      <div class="field"><span class="field__label">Ağırlık</span><div class="input">18,5<span class="input__suffix">kg</span></div></div>
+      <div class="field"><span class="field__label">Not</span><div class="input input--area"><span class="input__ph">İstersen bir not yaz</span></div></div>
+      <div class="field"><div class="input"><i class="mdi mdi-magnify"></i><span class="input__ph">Kovan ara (numara ya da ad)</span></div><p class="field__help">Arama kutusu.</p></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Telefon ve kod girişi<small>Rakamlar 22 ve 28 px, eş genişlikli. Tek bir gizli giriş alanı; kutuların tamamı dokunulabilir.</small></figcaption>
+    <div class="panel">
+      <p class="st">Telefon: odak</p>
+      <div class="phonein is-focus"><span class="phonein__pre">+90</span><span class="phonein__num">532 418 27<span class="caret"></span></span></div>
+      <p class="st">Telefon: hata</p>
+      <div class="phonein is-error"><span class="phonein__pre">+90</span><span class="phonein__num">432 418</span></div>
+      <p class="field__error"><i class="mdi mdi-alert-circle-outline"></i>Numara eksik ya da hatalı. 5 ile başlayan 10 haneyi yaz.</p>
+      <p class="st">Kod: yazılıyor</p>
+      <div class="otp"><span class="otp__box">4</span><span class="otp__box">1</span><span class="otp__box">7</span><span class="otp__box is-active"></span><span class="otp__box"></span><span class="otp__box"></span></div>
+      <p class="st">Kod: hata</p>
+      <div class="otp is-error"><span class="otp__box">4</span><span class="otp__box">1</span><span class="otp__box">7</span><span class="otp__box">9</span><span class="otp__box">0</span><span class="otp__box">2</span></div>
+      <p class="field__error"><i class="mdi mdi-alert-circle-outline"></i>Kod yanlış ya da süresi geçmiş.</p>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Sayaç (Stepper)<small>İki düğme 56 × 56, aralarında değer. Klavye açmadan sayı girilir.</small></figcaption>
+    <div class="panel">
+      <div class="steprow"><span class="steprow__label">Arılı çerçeve</span>
+        <span class="stepper"><button class="stepper__btn" data-step="-1" aria-label="Arılı çerçeve azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">8</span><button class="stepper__btn" data-step="1" aria-label="Arılı çerçeve artır"><i class="mdi mdi-plus"></i></button></span></div>
+      <div class="steprow"><span class="steprow__label">Basılı hal<small>Zemin koyulaşır, kenar mürekkep olur</small></span>
+        <span class="stepper"><button class="stepper__btn"><i class="mdi mdi-minus"></i></button><span class="stepper__val">5</span><button class="stepper__btn is-pressed"><i class="mdi mdi-plus"></i></button></span></div>
+      <div class="steprow"><span class="steprow__label">Alt sınırda<small>Azalt devre dışı</small></span>
+        <span class="stepper"><button class="stepper__btn is-disabled" data-step="-1"><i class="mdi mdi-minus"></i></button><span class="stepper__val">0</span><button class="stepper__btn" data-step="1"><i class="mdi mdi-plus"></i></button></span></div>
+      <div class="steprow"><span class="steprow__label">Örnek büyüklüğü<small>50'şer artar</small></span>
+        <span class="stepper" data-by="50" data-min="50"><button class="stepper__btn" data-step="-1"><i class="mdi mdi-minus"></i></button><span class="stepper__val">300</span><button class="stepper__btn" data-step="1"><i class="mdi mdi-plus"></i></button></span></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Segmentli seçim (SegmentedChoice)<small>Aralıklı kutular, 8 px boşluk. Seçili: bal dolgu, kalın yazı ve köşede onay işareti.</small></figcaption>
+    <div class="panel">
+      <p class="st">Dört seçenek (2 × 2)</p>
+      <div class="seg seg--2">
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Görüldü</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Yumurta görüldü</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Görülmedi</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Kraliçesiz</button>
+      </div>
+      <p class="st">Üç seçenek</p>
+      <div class="seg seg--3">
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Sakin</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Sinirli</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Saldırgan</button>
+      </div>
+      <p class="st">İki seçenek · biri basılı</p>
+      <div class="seg seg--2">
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>kg</button>
+        <button class="opt is-pressed"><i class="mdi mdi-check-circle opt__check"></i>litre</button>
+      </div>
+      <p class="st">Devre dışı</p>
+      <div class="seg seg--2">
+        <span class="opt is-disabled">Günlük</span><span class="opt is-disabled">Haftalık</span>
+      </div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Çip (Chip)<small>İçeriği kadar geniş, alt satıra sarar. Yükseklik 56.</small></figcaption>
+    <div class="panel">
+      <p class="st">Tek seçim</p>
+      <div class="chips">
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Alkol yıkama</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Şeker silkeleme</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Yapışkan tabla</button>
+      </div>
+      <p class="st">Çoklu seçim (süzgeç)</p>
+      <div class="chips" data-multi>
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Aktif</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Ölü</button>
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Satıldı</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Birleştirildi</button>
+      </div>
+      <p class="st">Devre dışı</p>
+      <div class="chips"><span class="opt is-disabled">Polen keki</span></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Liste öğesi (ListItem) ve kart (Card)<small>Satır en az 64. İkon çıplak, renkli kutu içinde değil. Ok yalnızca yeni ekran açan satırda.</small></figcaption>
+    <div class="panel">
+      <div class="group">
+        <a class="li"><i class="mdi mdi-bell-outline li__icon"></i><span class="li__main"><span class="li__title">Bildirimler</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li"><i class="mdi mdi-sync li__icon"></i><span class="li__main"><span class="li__title">Senkron durumu</span><span class="li__sub">Son senkron 5 dk önce</span></span><span class="li__value">2 kayıt bekliyor</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li is-pressed"><i class="mdi mdi-file-export-outline li__icon"></i><span class="li__main"><span class="li__title">Basılı satır</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <div class="li" data-switch><i class="mdi mdi-weather-partly-cloudy li__icon"></i><span class="li__main"><span class="li__title">Hava uyarıları</span><span class="li__sub">Don, şiddetli rüzgâr, yağış</span></span><span class="switch is-on"></span></div>
+        <div class="li is-disabled"><i class="mdi mdi-hexagon-multiple-outline li__icon"></i><span class="li__main"><span class="li__title">Devre dışı satır</span><span class="li__sub">Arınma süresi bitince açılır</span></span></div>
+        <a class="li li--danger"><i class="mdi mdi-trash-can-outline li__icon"></i><span class="li__main"><span class="li__title">Hesabı sil</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+      </div>
+      <p class="st">Kart: normal · basılı</p>
+      <a class="card card--press"><p class="t-strong">Köy Bahçesi</p><p class="t-helper">8 kovan · Son ziyaret dün</p></a>
+      <a class="card card--press is-pressed"><p class="t-strong">Köy Bahçesi</p><p class="t-helper">8 kovan · Son ziyaret dün</p></a>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kovan plakası ve kraliçe rozeti<small>Plaka uygulamanın imza öğesi. Rozet: işaret rengi + doğum yılı + yaş; renk adı da yazılır.</small></figcaption>
+    <div class="panel">
+      <p class="st">Plaka: liste · başlık · pasif kovan</p>
+      <div style="display:flex;gap:14px;align-items:flex-end"><span class="plate">7</span><span class="plate">24</span><span class="plate plate--lg">7</span><span class="plate plate--off">13</span></div>
+      <p class="st">Kraliçe rozeti (yılın son hanesine göre)</p>
+      <div class="stack">
+        <span class="queen"><span class="queen__disc q-white">26</span>Beyaz · bu yıl</span>
+        <span class="queen"><span class="queen__disc q-yellow">22</span>Sarı · 4 yaş</span>
+        <span class="queen"><span class="queen__disc q-red">23</span>Kırmızı · 3 yaş</span>
+        <span class="queen"><span class="queen__disc q-green">24</span>Yeşil · 2 yaş</span>
+        <span class="queen"><span class="queen__disc q-blue">25</span>Mavi · 1 yaş</span>
+        <span class="queen"><span class="queen__disc q-none">?</span>İşaretsiz</span>
+      </div>
+      <p class="st">Büyük (kraliçe ekranı)</p>
+      <span class="queen queen--lg"><span class="queen__disc q-blue">25</span><span>2025 doğumlu · Mavi<br><span class="t-helper">1 yaş · Satın alındı</span></span></span>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Uyarı kutusu<small>Renk tek başına anlam taşımaz: her kutuda ikon ve başlık var.</small></figcaption>
+    <div class="panel stack">
+      <div class="alert alert--info"><i class="mdi mdi-information-outline"></i><div><p class="alert__title">Bilgi</p><p class="alert__body">Konumu hava durumu ve bölgene uygun takvim için kullanırız.</p></div></div>
+      <div class="alert alert--warning"><i class="mdi mdi-alert-outline"></i><div><p class="alert__title">Arınma süresi sürüyor</p><p class="alert__body">Oksalik asit: 6 gün kaldı. Süre bitmeden bal sağılmamalı.</p></div></div>
+      <div class="alert alert--danger"><i class="mdi mdi-alert-circle-outline"></i><div><p class="alert__title">Kaydedilemedi</p><p class="alert__body">Telefonda yer kalmamış. Biraz yer açıp tekrar dene.</p></div></div>
+      <div class="alert alert--success"><i class="mdi mdi-check-circle-outline"></i><div><p class="alert__title">Denetim için uygun</p><p class="alert__body">18 °C, rüzgâr hafif, yağış beklenmiyor.</p></div></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Senkron şeridi (SyncBanner)<small>Ekranın üstünde, tam genişlik. Dokununca Senkron durumu açılır. Çevrimdışı hal sakin: bu uygulamada olağan durum.</small></figcaption>
+    <div class="panel" style="padding:0;overflow:hidden">
+      <a class="sync sync--syncing"><i class="mdi mdi-sync"></i><span class="sync__text">Kayıtlar gönderiliyor…</span></a>
+      <a class="sync sync--offline"><i class="mdi mdi-wifi-off"></i><span class="sync__text">İnternet yok. Kayıtların telefonda, bağlantı gelince gönderilecek.</span></a>
+      <a class="sync sync--error"><i class="mdi mdi-sync-alert"></i><span class="sync__text">Gönderilemedi, birazdan tekrar denenecek.</span></a>
+      <a class="sync sync--auth"><i class="mdi mdi-login"></i><span class="sync__text">Kayıtları göndermek için tekrar giriş yap.</span><span class="sync__action">Giriş yap</span></a>
+      <a class="sync sync--update"><i class="mdi mdi-cellphone-arrow-down"></i><span class="sync__text">Uygulamayı güncellemen gerekiyor.</span><span class="sync__action">Güncelle</span></a>
+      <div style="padding:14px 20px"><span class="sync sync--ok"><i class="mdi mdi-cloud-check-outline"></i>Son senkron: 5 dk önce</span><p class="t-helper" style="margin-top:6px">Her şey yolundayken şerit yok; yalnızca Ana Sayfa başlığında bu küçük satır.</p></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Boş durum, kayıt bildirimi, iskelet<small>Boş durumda her zaman bir sonraki adımın düğmesi bulunur.</small></figcaption>
+    <div class="panel">
+      <div class="empty"><i class="mdi mdi-beehive-outline"></i><h3>Henüz kovan yok</h3><p>Bu arılığa ilk kovanını ekle. Birden çok kovanı tek seferde de ekleyebilirsin.</p><button class="btn btn--primary btn--block"><i class="mdi mdi-plus"></i>Kovan ekle</button></div>
+      <p class="st">Kayıt bildirimi (internet olmasa da görünür)</p>
+      <div class="toast"><i class="mdi mdi-check-circle"></i><span>Denetim kaydedildi<small>Telefonda saklandı.</small></span></div>
+      <p class="st">Yükleniyor (iskelet)</p>
+      <div class="group">
+        <div class="li"><span class="sk" style="width:56px;height:56px;border-radius:12px"></span><span class="li__main"><span class="sk" style="display:block;width:140px;height:20px"></span><span class="sk" style="display:block;width:200px;height:16px;margin-top:8px"></span></span></div>
+        <div class="li"><span class="sk" style="width:56px;height:56px;border-radius:12px"></span><span class="li__main"><span class="sk" style="display:block;width:110px;height:20px"></span><span class="sk" style="display:block;width:180px;height:16px;margin-top:8px"></span></span></div>
+      </div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Alt sayfa (BottomSheet), anahtar, onay kutusu<small>Alt sayfada her zaman görünür bir Kapat düğmesi var; içinde başka ekrana geçiş yok.</small></figcaption>
+    <div class="panel" style="padding:0;overflow:hidden;position:relative;height:470px">
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="sheet__grab"></div>
+        <div class="sheet__head"><span class="t-subtitle">Durum</span><button class="appbar__btn"><i class="mdi mdi-close"></i>Kapat</button></div>
+        <a class="li"><span class="li__main"><span class="li__title">Aktif</span></span><span class="li__value">22</span><i class="mdi mdi-check li__chev" style="color:var(--color-text);margin:0"></i></a>
+        <a class="li"><span class="li__main"><span class="li__title">Ölü</span></span><span class="li__value">1</span></a>
+        <a class="li"><span class="li__main"><span class="li__title">Satıldı</span></span><span class="li__value">1</span></a>
+        <a class="li"><span class="li__main"><span class="li__title">Birleştirildi</span></span><span class="li__value">0</span></a>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="li" data-switch style="padding:0;min-height:56px"><span class="li__main"><span class="li__title">Anahtar: açık</span></span><span class="switch is-on"></span></div>
+      <div class="li" data-switch style="padding:0;min-height:56px"><span class="li__main"><span class="li__title">Anahtar: kapalı</span></span><span class="switch"></span></div>
+      <div class="check is-checked"><span class="check__box"><i class="mdi mdi-check"></i></span><span>Onay kutusu: işaretli</span></div>
+      <div class="check"><span class="check__box"><i class="mdi mdi-check"></i></span><span>Onay kutusu: boş</span></div>
+    </div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== GİRİŞ ============================== -->
+<section class="bs" id="giris">
+  <h2>Giriş</h2>
+  <p class="lede">Giriş bir araç ekranı: gösterişli karşılama yok, tek alan ve tek düğme var. Düğme klavye açıkken de görünür. Hata iletisi alanın hemen altında, ikonla birlikte durur.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Telefon girişi<small>Sayı klavyesi açık. Alan odakta, düğme klavyenin üstünde.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <div class="brand"><i class="mdi mdi-bee"></i>Kovan Takip</div>
+        <h1 class="t-title">Telefon numaran</h1>
+        <p class="t-body muted" style="margin:8px 0 24px">Telefonuna SMS ile bir kod göndereceğiz.</p>
+        <span class="field__label">Telefon numarası</span>
+        <div class="phonein is-focus"><span class="phonein__pre">+90</span><span class="phonein__num">532 418 27 46<span class="caret"></span></span></div>
+        <button class="btn btn--primary btn--block" style="margin-top:20px">Kod gönder</button>
+      </div>
+      <div data-keypad></div>
+      <div class="homeind homeind--kb"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Telefon girişi: geçersiz numara<small>Kenar kırmızı ve kalın, altında ikonlu açıklama.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <div class="brand"><i class="mdi mdi-bee"></i>Kovan Takip</div>
+        <h1 class="t-title">Telefon numaran</h1>
+        <p class="t-body muted" style="margin:8px 0 24px">Telefonuna SMS ile bir kod göndereceğiz.</p>
+        <span class="field__label">Telefon numarası</span>
+        <div class="phonein is-error"><span class="phonein__pre">+90</span><span class="phonein__num">432 418</span></div>
+        <p class="field__error"><i class="mdi mdi-alert-circle-outline"></i>Numara eksik ya da hatalı. 5 ile başlayan 10 haneyi yaz.</p>
+        <button class="btn btn--primary btn--block" style="margin-top:20px">Kod gönder</button>
+      </div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Telefon girişi: diğer durumlar<small>Yalnızca değişen bölüm gösterilir.</small></figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Gönderiliyor</p>
+        <button class="btn btn--primary btn--block"><span class="spinner"></span>Kod gönderiliyor</button></div>
+      <div class="state"><p class="st">Çok sık deneme</p>
+        <div class="alert alert--warning"><i class="mdi mdi-alert-outline"></i><div><p class="alert__title">Çok sık denedin</p><p class="alert__body">1 dakika sonra tekrar dene.</p></div></div>
+        <button class="btn btn--primary btn--block is-disabled" style="margin-top:12px">Kod gönder (0:58)</button></div>
+      <div class="state"><p class="st">İnternet yok</p>
+        <div class="alert alert--info"><i class="mdi mdi-wifi-off"></i><div><p class="alert__title">İnternet yok</p><p class="alert__body">Kod gönderebilmek için bağlantı gerekiyor. Giriş yaptıktan sonra uygulama internetsiz çalışır.</p></div></div>
+        <button class="btn btn--secondary btn--block" style="margin-top:12px">Tekrar dene</button></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kod doğrulama<small>Altı kutu, 50 × 64. Altıncı hane girilince kendiliğinden doğrulanır; düğme yine de durur.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Numarayı değiştir</button></div>
+      <div class="content">
+        <h1 class="t-title" style="margin-top:8px">Kodu gir</h1>
+        <p class="t-body muted" style="margin:8px 0 24px"><b style="color:var(--color-text);font-weight:600">+90 532 418 27 46</b> numarasına 6 haneli bir kod gönderdik.</p>
+        <div class="otp"><span class="otp__box">4</span><span class="otp__box">1</span><span class="otp__box">7</span><span class="otp__box">9</span><span class="otp__box is-active"></span><span class="otp__box"></span></div>
+        <button class="btn btn--primary btn--block is-disabled" style="margin-top:20px">Doğrula</button>
+        <button class="btn btn--text btn--block is-disabled">45 sn sonra tekrar gönderebilirsin</button>
+      </div>
+      <div data-keypad></div>
+      <div class="homeind homeind--kb"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kod doğrulama: yanlış kod<small>Geri sayım bitince "Kodu tekrar gönder" etkinleşir.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Numarayı değiştir</button></div>
+      <div class="content">
+        <h1 class="t-title" style="margin-top:8px">Kodu gir</h1>
+        <p class="t-body muted" style="margin:8px 0 24px"><b style="color:var(--color-text);font-weight:600">+90 532 418 27 46</b> numarasına 6 haneli bir kod gönderdik.</p>
+        <div class="otp is-error"><span class="otp__box">4</span><span class="otp__box">1</span><span class="otp__box">7</span><span class="otp__box">9</span><span class="otp__box">0</span><span class="otp__box">2</span></div>
+        <p class="field__error"><i class="mdi mdi-alert-circle-outline"></i>Kod yanlış ya da süresi geçmiş. Tekrar yaz ya da yeni kod iste.</p>
+        <button class="btn btn--primary btn--block" style="margin-top:20px">Doğrula</button>
+        <button class="btn btn--text btn--block">Kodu tekrar gönder</button>
+      </div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kod doğrulama: diğer durumlar</figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Doğrulanıyor</p>
+        <button class="btn btn--primary btn--block"><span class="spinner"></span>Doğrulanıyor</button></div>
+      <div class="state"><p class="st">Yeni kod gönderildi</p>
+        <div class="alert alert--success"><i class="mdi mdi-check-circle-outline"></i><div><p class="alert__title">Yeni kod gönderildi</p><p class="alert__body">Birkaç saniye içinde telefonuna ulaşır.</p></div></div></div>
+    </div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== İLK KURULUM ============================== -->
+<section class="bs" id="kurulum">
+  <h2>İlk kurulum</h2>
+  <p class="lede">Üç adım, her biri gerçek bir bilgi alıyor; tanıtım slaytı yok. İlerleme üstte çubuk ve "Adım 1 / 3" yazısıyla gösterilir. "Devam" her adımda aynı yerde, başparmağın altında.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Adım 1: işletme adı<small>Sorumluluk reddi onayı burada; işaretlenmeden "Devam" etkinleşmez.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar" style="padding:0 20px"><div style="flex:1"><div class="steps"><i class="is-done"></i><i></i><i></i></div><p class="t-label muted">Adım 1 / 3</p></div></div>
+      <div class="content">
+        <h1 class="t-title" style="margin-top:20px">İşletmenin adı ne?</h1>
+        <p class="t-body muted" style="margin:8px 0 24px">Kayıtlarında ve dışa aktardığın dosyalarda bu ad görünür.</p>
+        <div class="field"><span class="field__label">İşletme adı</span><div class="input">Karaca Arıcılık</div></div>
+        <div class="check is-checked" style="margin-top:20px"><span class="check__box"><i class="mdi mdi-check"></i></span><span>Uygulamadaki önerilerin genel bilgi olduğunu, veteriner tavsiyesi yerine geçmediğini anladım.</span></div>
+      </div>
+      <div class="dock"><button class="btn btn--primary">Devam</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Adım 2: ilk arılık<small>Konum izni, kullanıcı düğmeye basınca ve nedeni yazılıyken istenir.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Geri</button></div>
+      <div class="content">
+        <div class="steps"><i class="is-done"></i><i class="is-done"></i><i></i></div><p class="t-label muted">Adım 2 / 3</p>
+        <h1 class="t-title" style="margin-top:20px">İlk arılığını ekle</h1>
+        <p class="t-body muted" style="margin:8px 0 24px">Kovanlarını arılıklara göre tutarsın. Sonra istediğin kadar arılık ekleyebilirsin.</p>
+        <div class="field"><span class="field__label">Arılık adı</span><div class="input">Yayla Arılığı</div></div>
+        <div class="field"><span class="field__label">Konum</span>
+          <button class="btn btn--secondary btn--block"><i class="mdi mdi-crosshairs-gps"></i>Konumumu kullan</button>
+          <p class="field__help">Konum izni isteyeceğiz. Hava durumu ve bölgene uygun takvim için kullanılır.</p>
+          <button class="btn btn--text" style="margin-left:-12px">Konumu elle gir</button>
+        </div>
+      </div>
+      <div class="dock"><button class="btn btn--primary">Devam</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Adım 2: konum durumları</figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Konum alınıyor</p>
+        <button class="btn btn--secondary btn--block"><span class="spinner"></span>Konum alınıyor</button></div>
+      <div class="state"><p class="st">Konum alındı</p>
+        <div class="alert alert--success"><i class="mdi mdi-map-marker-outline"></i><div><p class="alert__title">Konum alındı</p><p class="alert__body">Mudurnu, Bolu yakınları</p></div></div>
+        <button class="btn btn--text" style="margin-left:-12px">Konumu değiştir</button></div>
+      <div class="state"><p class="st">Konum alınamadı</p>
+        <div class="alert alert--danger"><i class="mdi mdi-alert-circle-outline"></i><div><p class="alert__title">Konum alınamadı</p><p class="alert__body">Açık havada tekrar dene ya da konumu elle gir. Konumsuz da devam edebilirsin.</p></div></div>
+        <div class="row2" style="margin-top:12px"><button class="btn btn--secondary">Tekrar dene</button><button class="btn btn--secondary">Elle gir</button></div></div>
+    </div></figure>
+
+    <figure class="fr"><figcaption class="cap">Adım 3: bildirim izni<small>Sistem penceresi yalnızca "İzin ver"e basınca açılır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Geri</button></div>
+      <div class="content">
+        <div class="steps"><i class="is-done"></i><i class="is-done"></i><i class="is-done"></i></div><p class="t-label muted">Adım 3 / 3</p>
+        <h1 class="t-title" style="margin-top:20px">Hatırlatma ister misin?</h1>
+        <p class="t-body muted" style="margin:8px 0 20px">İzin verirsen yalnızca şu iki konuda bildirim göndeririz:</p>
+        <div class="group">
+          <div class="li" style="cursor:default"><i class="mdi mdi-bell-outline li__icon"></i><span class="li__main"><span class="li__title">Görev hatırlatmaları</span><span class="li__sub">Varroa kontrolü, besleme zamanı gibi</span></span></div>
+          <div class="li" style="cursor:default"><i class="mdi mdi-weather-partly-cloudy li__icon"></i><span class="li__main"><span class="li__title">Hava uyarıları</span><span class="li__sub">Don, şiddetli rüzgâr, yağış</span></span></div>
+        </div>
+        <p class="t-helper" style="margin-top:16px">İstediğin zaman Ayarlar'dan kapatabilirsin.</p>
+      </div>
+      <div class="dock dock--col"><button class="btn btn--primary"><i class="mdi mdi-bell-outline"></i>İzin ver</button><button class="btn btn--text">Şimdi değil</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== ANA SAYFA ============================== -->
+<section class="bs" id="ana">
+  <h2>Ana Sayfa</h2>
+  <p class="lede">Karşılama cümlesi yok; ekran "bugün ne yapacağım" sorusuna cevap verir. Geciken ve bugünkü görevler düğmeleriyle açık, yarınki tek satır. İki ana eylem altta sabit: Denetim başlat ve QR okut. QR okut, bütün sekme ana ekranlarında aynı yerde durur.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Ana Sayfa: çevrimdışı<small>Şerit sakin tonda ve önce güven veriyor: kayıtların telefonda.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <a class="sync sync--offline"><i class="mdi mdi-wifi-off"></i><span class="sync__text">İnternet yok. Kayıtların telefonda, bağlantı gelince gönderilecek.</span></a>
+      <div class="content">
+        <header class="roothead"><div><p class="t-helper">Karaca Arıcılık</p><h1 class="t-title">Bugün</h1></div><p class="roothead__side">12 Nisan<br>Pazar</p></header>
+        <a class="card card--press weather"><i class="mdi mdi-weather-partly-cloudy"></i><span class="weather__main"><span class="t-strong" style="display:block">18 °C · Rüzgâr 12 km/s</span><span class="tag tag--success"><i class="mdi mdi-check-circle-outline"></i>Denetim için uygun</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+
+        <section class="sec"><h2 class="sec__h">Görevler <small>2 bekliyor</small></h2>
+          <div class="group">
+            <article class="task">
+              <span class="tag tag--danger"><i class="mdi mdi-alert-circle-outline"></i>3 gün gecikti</span>
+              <h3>Kovanları kışa hazırla</h3>
+              <p class="t-helper">Yayla Arılığı · 24 kovan</p>
+              <div class="task__actions"><button class="btn btn--secondary btn--56"><i class="mdi mdi-check"></i>Tamamlandı</button><button class="btn btn--text">Ertele</button></div>
+            </article>
+            <article class="task">
+              <span class="tag tag--muted"><i class="mdi mdi-calendar-today"></i>Bugün</span>
+              <h3>Varroa kontrolü yap</h3>
+              <p class="t-helper">Köy Bahçesi · 8 kovan</p>
+              <div class="task__actions"><button class="btn btn--secondary btn--56"><i class="mdi mdi-check"></i>Tamamlandı</button><button class="btn btn--text">Ertele</button></div>
+            </article>
+            <a class="li"><span class="li__main"><span class="li__title">Bahar beslemesi</span><span class="li__sub">Yarın · Kestane Ormanı</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          </div>
+        </section>
+
+        <section class="sec"><h2 class="sec__h">Özet</h2>
+          <div class="group">
+            <a class="li"><i class="mdi mdi-beehive-outline li__icon"></i><span class="li__main"><span class="li__title">Kovan</span><span class="li__sub">3 arılık</span></span><span class="li__value t-number" style="color:var(--color-text)">44</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+            <a class="li"><i class="mdi mdi-clipboard-check-outline li__icon"></i><span class="li__main"><span class="li__title">Son denetim</span><span class="li__sub">Yayla Arılığı</span></span><span class="li__value">3 gün önce</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+            <a class="li"><i class="mdi mdi-timer-sand li__icon"></i><span class="li__main"><span class="li__title">Arınma süresi</span><span class="li__sub">Oksalik asit · Yayla Arılığı</span></span><span class="li__value tag tag--warning"><i class="mdi mdi-alert-outline"></i>6 gün kaldı</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          </div>
+        </section>
+      </div>
+      <div class="dock"><button class="btn btn--primary btn--grow"><i class="mdi mdi-clipboard-check-outline"></i>Denetim başlat</button><button class="btn btn--secondary"><i class="mdi mdi-qrcode-scan"></i>QR okut</button></div>
+      <nav data-tabs="home"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Ana Sayfa: her şey yolunda, görev yok<small>Şerit yok. Senkron bilgisi başlıkta küçük bir satır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <header class="roothead"><div><p class="t-helper">Karaca Arıcılık</p><h1 class="t-title">Bugün</h1></div><p class="roothead__side">12 Nisan<br>Pazar</p></header>
+        <span class="sync sync--ok" style="margin:-8px 0 16px"><i class="mdi mdi-cloud-check-outline"></i>Son senkron: 5 dk önce</span>
+        <a class="card card--press weather"><i class="mdi mdi-weather-partly-cloudy"></i><span class="weather__main"><span class="t-strong" style="display:block">18 °C · Rüzgâr 12 km/s</span><span class="tag tag--success"><i class="mdi mdi-check-circle-outline"></i>Denetim için uygun</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <section class="sec"><h2 class="sec__h">Görevler</h2>
+          <div class="card" style="text-align:center;padding:24px 16px"><i class="mdi mdi-check-circle-outline" style="font-size:44px;line-height:1;color:var(--color-success)"></i><p class="t-strong" style="margin-top:8px">Bugün için görev yok</p><p class="t-helper">Sıradaki: Bahar beslemesi, yarın.</p></div>
+        </section>
+        <section class="sec"><h2 class="sec__h">Özet</h2>
+          <div class="group">
+            <a class="li"><i class="mdi mdi-beehive-outline li__icon"></i><span class="li__main"><span class="li__title">Kovan</span><span class="li__sub">3 arılık</span></span><span class="li__value t-number" style="color:var(--color-text)">44</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+            <a class="li"><i class="mdi mdi-clipboard-check-outline li__icon"></i><span class="li__main"><span class="li__title">Son denetim</span><span class="li__sub">Yayla Arılığı</span></span><span class="li__value">3 gün önce</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          </div>
+        </section>
+      </div>
+      <div class="dock"><button class="btn btn--primary btn--grow"><i class="mdi mdi-clipboard-check-outline"></i>Denetim başlat</button><button class="btn btn--secondary"><i class="mdi mdi-qrcode-scan"></i>QR okut</button></div>
+      <nav data-tabs="home"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== ARILIK VE KOVAN ============================== -->
+<section class="bs" id="arilik">
+  <h2>Arılık ve kovan</h2>
+  <p class="lede">Arılık, kovan ve kovan detayı aynı kalıbı izler: üstte ad, ortada liste, altta o ekranın bir ya da iki eylemi. Kovan listesinde göz önce plakadaki numarayı bulur; sağdaki disk kraliçenin işaret rengini gösterir.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Arılıklar<small>Tek grup, üç büyük satır. Konum durumu ikon ve yazıyla.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <header class="roothead"><div><h1 class="t-title">Arılıklar</h1><p class="t-helper">3 arılık · 44 kovan</p></div></header>
+        <div class="group">
+          <a class="li" style="padding:14px 16px"><span class="li__main"><span class="li__title li__title--lg">Yayla Arılığı</span><span class="li__sub">24 kovan · Son ziyaret 3 gün önce</span><span class="tag tag--muted"><i class="mdi mdi-map-marker-outline"></i>Konum kayıtlı</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li" style="padding:14px 16px"><span class="li__main"><span class="li__title li__title--lg">Köy Bahçesi</span><span class="li__sub">8 kovan · Son ziyaret dün</span><span class="tag tag--muted"><i class="mdi mdi-map-marker-outline"></i>Konum kayıtlı</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li" style="padding:14px 16px"><span class="li__main"><span class="li__title li__title--lg">Kestane Ormanı</span><span class="li__sub">12 kovan · Son ziyaret 2 hafta önce</span><span class="tag tag--warning"><i class="mdi mdi-map-marker-off-outline"></i>Konum yok: hava uyarısı gelmez</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        </div>
+      </div>
+      <div class="dock"><button class="btn btn--primary btn--grow"><i class="mdi mdi-plus"></i>Arılık ekle</button><button class="btn btn--secondary"><i class="mdi mdi-qrcode-scan"></i>QR okut</button></div>
+      <nav data-tabs="apiary"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Arılıklar: boş durum<small>Ortalanmış düzen yalnızca boş durumda kullanılır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content content--center">
+        <div class="empty"><i class="mdi mdi-beehive-outline"></i><h3>Henüz arılığın yok</h3><p>Önce bir arılık ekle, sonra kovanlarını içine yerleştir.</p><button class="btn btn--primary btn--block"><i class="mdi mdi-plus"></i>Arılık ekle</button></div>
+      </div>
+      <nav data-tabs="apiary"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Arılık detayı: kovan listesi<small>Satır 84 px. Arama, durum süzgeci ve çoklu seçim tek satırda üç düğme; kaydırarak silme yok.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Arılıklar</button><button class="appbar__btn"><i class="mdi mdi-pencil-outline"></i>Düzenle</button></div>
+      <div class="content">
+        <div class="pagehead"><h1 class="t-title">Yayla Arılığı</h1><p class="t-helper">24 kovan · 19 güçlü · 5 zayıf</p></div>
+        <div class="alert alert--warning" style="align-items:center"><i class="mdi mdi-timer-sand"></i><p class="alert__title">Arınma süresi: 6 gün kaldı</p></div>
+        <div class="toolbar"><button class="btn btn--secondary btn--56"><i class="mdi mdi-magnify"></i>Ara</button><button class="btn btn--secondary btn--56">Aktif<i class="mdi mdi-chevron-down"></i></button><button class="btn btn--secondary btn--56">Çoklu seç</button></div>
+        <div class="group" style="margin-top:12px">
+          <a class="li hiverow"><span class="plate">1</span><span class="li__main"><span class="li__title">Kraliçe Ana</span><span class="li__sub">Güçlü · 3 gün önce</span></span><span class="queen__disc q-blue">25</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">2</span><span class="li__main"><span class="li__title">Kovan 2</span><span class="li__sub">Güçlü · 3 gün önce</span></span><span class="queen__disc q-yellow">22</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">3</span><span class="li__main"><span class="li__title">Kovan 3</span><span class="tag tag--warning"><i class="mdi mdi-alert-outline"></i>Zayıf: 4 arılı çerçeve</span></span><span class="queen__disc q-green">24</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">4</span><span class="li__main"><span class="li__title">Kovan 4</span><span class="tag tag--danger"><i class="mdi mdi-alert-circle-outline"></i>Kraliçe görülmedi</span></span><span class="queen__disc q-none">?</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">5</span><span class="li__main"><span class="li__title">Kovan 5</span><span class="li__sub">Güçlü · 3 gün önce</span></span><span class="queen__disc q-blue">25</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">6</span><span class="li__main"><span class="li__title">Kovan 6</span><span class="li__sub">Güçlü · 10 gün önce</span></span><span class="queen__disc q-red">23</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li hiverow"><span class="plate">7</span><span class="li__main"><span class="li__title">Sağlam 7</span><span class="li__sub">Güçlü · 3 gün önce</span></span><span class="queen__disc q-blue">25</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li"><i class="mdi mdi-plus li__icon" style="color:var(--color-secondary)"></i><span class="li__main"><span class="li__title" style="color:var(--color-secondary)">Kovan ekle</span><span class="li__sub">Tek tek ya da toplu (1'den 24'e gibi)</span></span></a>
+        </div>
+      </div>
+      <div class="dock"><button class="btn btn--primary btn--grow"><i class="mdi mdi-clipboard-check-outline"></i>Toplu denetim</button><button class="btn btn--secondary"><i class="mdi mdi-qrcode-scan"></i>QR okut</button></div>
+      <nav data-tabs="apiary"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kovan detayı<small>En sık iş (Denetle) altta birincil düğme. Diğer kayıtlar "Kayıt ekle" ile açılır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Yayla Arılığı</button><button class="appbar__btn"><i class="mdi mdi-pencil-outline"></i>Düzenle</button></div>
+      <div class="content">
+        <div class="hivehead"><span class="plate plate--lg">7</span><div><h1>Sağlam 7</h1><span class="tag tag--success"><i class="mdi mdi-check-circle-outline"></i>Aktif · Güçlü</span></div></div>
+        <div class="alert alert--warning"><i class="mdi mdi-timer-sand"></i><div><p class="alert__title">Arınma süresi: 6 gün kaldı</p><p class="alert__body">Oksalik asit. 18 Nisan'dan önce bal sağılmamalı.</p></div></div>
+        <div class="group" style="margin-top:12px">
+          <a class="li"><span class="queen__disc q-blue">25</span><span class="li__main"><span class="li__title">Kraliçe</span><span class="li__sub">2025 doğumlu · Mavi · 1 yaş</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        </div>
+        <section class="sec"><h2 class="sec__h">Son denetim <small>3 gün önce</small></h2>
+          <div class="frames3"><div><b>8</b><span>arılı</span></div><div><b>5</b><span>yavrulu</span></div><div><b>3</b><span>ballı</span></div></div>
+          <p class="t-helper" style="margin-top:8px">Kraliçe görüldü · Varroa %1 · Sakin</p>
+        </section>
+        <section class="sec"><h2 class="sec__h">Geçmiş</h2>
+          <div class="tl">
+            <a class="tl__item"><span class="tl__icon"><i class="mdi mdi-clipboard-check-outline"></i></span><span class="tl__main"><span class="tl__top"><b>Denetim</b><span>9 Nisan</span></span><p>8 arılı, 5 yavrulu, 3 ballı. Kraliçe görüldü.</p></span></a>
+            <a class="tl__item"><span class="tl__icon"><i class="mdi mdi-medical-bag"></i></span><span class="tl__main"><span class="tl__top"><b>İlaçlama</b><span>4 Nisan</span></span><p>Oksalik asit. Arınma 14 gün.</p></span></a>
+            <a class="tl__item"><span class="tl__icon"><i class="mdi mdi-cup-water"></i></span><span class="tl__main"><span class="tl__top"><b>Besleme</b><span>28 Mart</span></span><p>Şeker şurubu, 2 litre.</p></span></a>
+            <a class="tl__item"><span class="tl__icon"><i class="mdi mdi-truck-outline"></i></span><span class="tl__main"><span class="tl__top"><b>Taşıma</b><span>15 Mart</span></span><p>Köy Bahçesi'nden Yayla Arılığı'na.</p></span></a>
+            <a class="tl__item"><span class="tl__icon"><i class="mdi mdi-crown-outline"></i></span><span class="tl__main"><span class="tl__top"><b>Kraliçe değişimi</b><span>12 Mayıs 2025</span></span><p>2025 doğumlu, mavi, satın alındı.</p></span></a>
+          </div>
+        </section>
+      </div>
+      <div class="dock"><button class="btn btn--primary"><i class="mdi mdi-clipboard-check-outline"></i>Denetle</button><button class="btn btn--secondary"><i class="mdi mdi-plus"></i>Kayıt ekle</button></div>
+      <nav data-tabs="apiary"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kovan detayı: "Kayıt ekle" alt sayfası<small>Beş kayıt türü, her biri ikon ve yazıyla. Arınma sürerken sağım satırı uyarı taşır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Yayla Arılığı</button></div>
+      <div class="content">
+        <div class="hivehead"><span class="plate plate--lg">7</span><div><h1>Sağlam 7</h1><span class="tag tag--success"><i class="mdi mdi-check-circle-outline"></i>Aktif · Güçlü</span></div></div>
+      </div>
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="sheet__grab"></div>
+        <div class="sheet__head"><span class="t-subtitle">Kayıt ekle</span><button class="appbar__btn"><i class="mdi mdi-close"></i>Kapat</button></div>
+        <a class="li"><i class="mdi mdi-medical-bag li__icon"></i><span class="li__main"><span class="li__title">İlaçlama</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li"><i class="mdi mdi-cup-water li__icon"></i><span class="li__main"><span class="li__title">Besleme</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li"><i class="mdi mdi-hexagon-multiple-outline li__icon"></i><span class="li__main"><span class="li__title">Bal sağımı</span><span class="tag tag--warning"><i class="mdi mdi-alert-outline"></i>Arınma sürüyor: 6 gün</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li"><i class="mdi mdi-truck-outline li__icon"></i><span class="li__main"><span class="li__title">Başka arılığa taşı</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <a class="li"><i class="mdi mdi-crown-outline li__icon"></i><span class="li__main"><span class="li__title">Kraliçe değiştir</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        <div class="homeind"></div>
+      </div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Kovan listesi: yükleniyor ve hata<small>Kayıtlar telefonda olduğu için yükleme çok kısa sürer; yine de iskelet tanımlı.</small></figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Yükleniyor</p>
+        <div class="group">
+          <div class="li hiverow"><span class="sk" style="width:56px;height:56px;border-radius:12px"></span><span class="li__main"><span class="sk" style="display:block;width:130px;height:20px"></span><span class="sk" style="display:block;width:170px;height:16px;margin-top:8px"></span></span><span class="sk" style="width:36px;height:36px;border-radius:50%"></span></div>
+          <div class="li hiverow"><span class="sk" style="width:56px;height:56px;border-radius:12px"></span><span class="li__main"><span class="sk" style="display:block;width:100px;height:20px"></span><span class="sk" style="display:block;width:190px;height:16px;margin-top:8px"></span></span><span class="sk" style="width:36px;height:36px;border-radius:50%"></span></div>
+        </div></div>
+      <div class="state"><p class="st">Hata</p>
+        <div class="alert alert--danger"><i class="mdi mdi-alert-circle-outline"></i><div><p class="alert__title">Kovanlar açılamadı</p><p class="alert__body">Kayıtların silinmedi. Tekrar dene; olmazsa uygulamayı kapatıp aç.</p></div></div>
+        <button class="btn btn--secondary btn--block" style="margin-top:12px">Tekrar dene</button></div>
+      <div class="state"><p class="st">Arama sonucu yok</p>
+        <div class="empty" style="padding:8px"><h3 style="margin-top:0">"58" bulunamadı</h3><p style="margin-bottom:12px">Bu arılıkta 1'den 24'e kadar kovan var.</p><button class="btn btn--secondary btn--block">Aramayı temizle</button></div></div>
+    </div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== DENETİM ============================== -->
+<section class="bs" id="denetim">
+  <h2>Denetim</h2>
+  <p class="lede">Sahada en çok kullanılan ekran. Klavye yalnızca not için açılır; geri kalan her şey sayaç ve seçenek kutusu. Sıra, arıcının kovanda baktığı sıra: çerçeveler, kraliçe, mizaç. Varroa sayımı her denetimde yapılmadığı için bir anahtarla açılır. "Kaydet" hep altta. Sayaçlara ve seçeneklere dokunup deneyebilirsin.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Denetim formu<small>Tam ekran, sekme çubuğu yok. Sol üstte her zaman "Vazgeç".</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-close"></i>Vazgeç</button></div>
+      <div class="content">
+        <h1 class="t-title" style="margin-bottom:12px">Denetim</h1>
+        <div class="context"><span class="plate">7</span><div><p class="t-strong">Sağlam 7</p><p class="t-helper">Yayla Arılığı · bugün 10.15</p></div></div>
+        <div data-form></div>
+      </div>
+      <div class="dock"><button class="btn btn--primary"><i class="mdi mdi-check"></i>Kaydet</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Denetim formu: devamı<small>Aynı ekranın aşağı kaydırılmış hali. Oran, sayılar değişince kendiliğinden hesaplanır.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-close"></i>Vazgeç</button></div>
+      <div class="content" data-scroll="620">
+        <h1 class="t-title" style="margin-bottom:12px">Denetim</h1>
+        <div class="context"><span class="plate">7</span><div><p class="t-strong">Sağlam 7</p><p class="t-helper">Yayla Arılığı · bugün 10.15</p></div></div>
+        <div data-form></div>
+      </div>
+      <div class="dock"><button class="btn btn--primary"><i class="mdi mdi-check"></i>Kaydet</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Toplu denetim: Kovan 3 / 24<small>Aynı form, üstte ilerleme. Önceki denetimin değerleri karşılaştırma için görünür.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-close"></i>Bitir</button><span class="t-strong" style="padding-right:12px">Kovan 3 / 24</span></div>
+      <div style="padding:0 20px;flex:none"><div class="progress" style="margin-top:0"><i style="width:12.5%"></i></div></div>
+      <div class="content">
+        <div class="context"><span class="plate">3</span><div><p class="t-strong">Kovan 3</p><p class="t-helper">Önceki: 4 arılı, 2 yavrulu, 1 ballı</p></div></div>
+        <div data-form></div>
+      </div>
+      <div class="dock"><button class="btn btn--secondary btn--fit" style="padding:8px 14px"><i class="mdi mdi-arrow-left"></i>Geri</button><button class="btn btn--secondary btn--fit" style="padding:8px 16px">Atla</button><button class="btn btn--primary" style="padding:8px 10px">Kaydet, sonraki</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Toplu denetim: oturum özeti<small>Önce dikkat isteyen kovanlar; her satır o kovanı açar.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <h1 class="t-title" style="margin-top:20px">Oturum özeti</h1>
+        <p class="t-helper" style="margin:4px 0 16px">Yayla Arılığı · 12 Nisan · 1 sa 20 dk</p>
+        <div class="alert alert--success"><i class="mdi mdi-check-circle-outline"></i><div><p class="alert__title">22 kovan denetlendi</p><p class="alert__body">2 kovan atlandı. Hepsi telefonda kayıtlı.</p></div></div>
+        <section class="sec"><h2 class="sec__h">Dikkat isteyenler <small>3 kovan</small></h2>
+          <div class="group">
+            <a class="li hiverow"><span class="plate">3</span><span class="li__main"><span class="li__title">Kovan 3</span><span class="tag tag--warning"><i class="mdi mdi-alert-outline"></i>Zayıf: 4 arılı çerçeve</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+            <a class="li hiverow"><span class="plate">4</span><span class="li__main"><span class="li__title">Kovan 4</span><span class="tag tag--danger"><i class="mdi mdi-alert-circle-outline"></i>Kraliçe görülmedi</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+            <a class="li hiverow"><span class="plate">11</span><span class="li__main"><span class="li__title">Kovan 11</span><span class="tag tag--danger"><i class="mdi mdi-alert-circle-outline"></i>Varroa %4</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          </div>
+        </section>
+        <section class="sec"><h2 class="sec__h">Atlananlar</h2>
+          <div class="group">
+            <a class="li"><span class="li__main"><span class="li__title">Kovan 9 ve Kovan 17</span><span class="li__sub">Şimdi denetlemek için dokun</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          </div>
+        </section>
+      </div>
+      <div class="dock"><button class="btn btn--primary">Bitti</button></div>
+      <div class="homeind"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Denetim: kayıt ve çıkış durumları</figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Kaydedildi (internet olmasa da)</p>
+        <div class="toast"><i class="mdi mdi-check-circle"></i><span>Denetim kaydedildi<small>Telefonda saklandı.</small></span></div></div>
+      <div class="state"><p class="st">Kaydediliyor</p>
+        <button class="btn btn--primary btn--block"><span class="spinner"></span>Kaydediliyor</button></div>
+      <div class="state"><p class="st">Kaydetmeden çıkış onayı</p>
+        <p class="t-subtitle">Denetim kaydedilmedi</p>
+        <p class="t-body muted" style="margin:6px 0 16px">Çıkarsan girdiğin sayılar silinir.</p>
+        <div class="stack"><button class="btn btn--primary btn--block">Forma dön</button><button class="btn btn--text btn--danger-text btn--block">Kaydetmeden çık</button></div></div>
+    </div></figure>
+
+  </div>
+</section>
+
+<!-- ============================== AYARLAR VE SENKRON ============================== -->
+<section class="bs" id="ayarlar">
+  <h2>Ayarlar ve senkron</h2>
+  <p class="lede">Ayarlar gruplu bir liste: veriler, uygulama, hesap. Geri dönüşü olmayan işler en altta ve kırmızı. Senkron ekranı önce "kayıtların güvende" der, sonra ne beklediğini gösterir.</p>
+  <div class="frames">
+
+    <figure class="fr"><figcaption class="cap">Ayarlar<small>Ok yalnızca yeni ekran açan satırlarda. "Çıkış yap" onay sorar, ekran açmaz.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="content">
+        <header class="roothead"><h1 class="t-title">Ayarlar</h1></header>
+        <div class="account"><h2>Karaca Arıcılık</h2><p class="t-helper">+90 532 418 27 46</p></div>
+        <p class="grouplabel">Veriler</p>
+        <div class="group">
+          <a class="li"><i class="mdi mdi-sync li__icon"></i><span class="li__main"><span class="li__title">Senkron durumu</span><span class="li__sub">2 kayıt bekliyor</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li"><i class="mdi mdi-file-export-outline li__icon"></i><span class="li__main"><span class="li__title">Verileri dışa aktar</span><span class="li__sub">CSV dosyası</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        </div>
+        <p class="grouplabel">Uygulama</p>
+        <div class="group">
+          <a class="li"><i class="mdi mdi-bell-outline li__icon"></i><span class="li__main"><span class="li__title">Bildirimler</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li"><i class="mdi mdi-credit-card-outline li__icon"></i><span class="li__main"><span class="li__title">Abonelik</span></span><span class="li__value">Pro · yıllık</span><i class="mdi mdi-chevron-right li__chev"></i></a>
+          <a class="li"><i class="mdi mdi-file-document-outline li__icon"></i><span class="li__main"><span class="li__title">Hukuki metinler</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        </div>
+        <p class="grouplabel">Hesap</p>
+        <div class="group">
+          <a class="li"><i class="mdi mdi-logout li__icon"></i><span class="li__main"><span class="li__title">Çıkış yap</span></span></a>
+          <a class="li li--danger"><i class="mdi mdi-trash-can-outline li__icon"></i><span class="li__main"><span class="li__title">Hesabı sil</span></span><i class="mdi mdi-chevron-right li__chev"></i></a>
+        </div>
+        <p class="version">Sürüm 1.0.0</p>
+      </div>
+      <nav data-tabs="settings"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Senkron durumu: gönderilemedi<small>Durum, son senkron zamanı, bekleyen kayıtlar ve elle tetikleme.</small></figcaption>
+    <div class="phone"><div class="screen">
+      <div data-sb></div>
+      <div class="appbar"><button class="appbar__btn"><i class="mdi mdi-arrow-left"></i>Ayarlar</button></div>
+      <div class="content">
+        <div class="pagehead"><h1 class="t-title">Senkron durumu</h1></div>
+        <div class="card syncstat"><i class="mdi mdi-cloud-upload-outline"></i><div><p class="t-subtitle">2 kayıt bekliyor</p><p class="t-helper">Son senkron: bugün 09.42</p></div></div>
+        <div class="alert alert--warning" style="margin-top:12px"><i class="mdi mdi-sync-alert"></i><div><p class="alert__title">Gönderilemedi</p><p class="alert__body">Birazdan kendiliğinden tekrar denenecek. Kayıtların telefonda güvende.</p></div></div>
+        <section class="sec"><h2 class="sec__h">Bekleyen kayıtlar</h2>
+          <div class="group">
+            <div class="li" style="cursor:default"><i class="mdi mdi-clipboard-check-outline li__icon"></i><span class="li__main"><span class="li__title">Denetim · Kovan 7</span><span class="li__sub">Yayla Arılığı · bugün 10.15</span></span></div>
+            <div class="li" style="cursor:default"><i class="mdi mdi-cup-water li__icon"></i><span class="li__main"><span class="li__title">Besleme · Kovan 12</span><span class="li__sub">Yayla Arılığı · bugün 10.31</span></span></div>
+          </div>
+        </section>
+      </div>
+      <div class="dock"><button class="btn btn--primary"><i class="mdi mdi-sync"></i>Şimdi senkronla</button></div>
+      <nav data-tabs="settings"></nav>
+      <div class="homeind homeind--surface"></div>
+    </div></div></figure>
+
+    <figure class="fr"><figcaption class="cap">Senkron durumu: diğer haller</figcaption>
+    <div class="states">
+      <div class="state"><p class="st">Her şey gönderildi</p>
+        <div class="card syncstat"><i class="mdi mdi-cloud-check-outline" style="color:var(--color-success)"></i><div><p class="t-subtitle">Her şey gönderildi</p><p class="t-helper">Son senkron: 2 dk önce</p></div></div></div>
+      <div class="state"><p class="st">Çevrimdışı</p>
+        <div class="card syncstat"><i class="mdi mdi-wifi-off" style="color:var(--color-text-muted)"></i><div><p class="t-subtitle">İnternet yok</p><p class="t-helper">2 kayıt telefonda bekliyor. Bağlantı gelince kendiliğinden gönderilecek.</p></div></div>
+        <button class="btn btn--primary btn--block is-disabled" style="margin-top:12px"><i class="mdi mdi-sync"></i>Şimdi senkronla</button></div>
+      <div class="state"><p class="st">Gönderiliyor</p>
+        <button class="btn btn--primary btn--block"><span class="spinner"></span>Gönderiliyor</button></div>
+      <div class="state"><p class="st">Oturum kapalı</p>
+        <div class="alert alert--danger"><i class="mdi mdi-login"></i><div><p class="alert__title">Oturumun kapanmış</p><p class="alert__body">Kayıtların telefonda duruyor. Göndermek için tekrar giriş yap.</p></div></div>
+        <button class="btn btn--primary btn--block" style="margin-top:12px">Giriş yap</button></div>
+    </div></figure>
+
+  </div>
+</section>
+
+</div>
+
+<!-- Denetim formu: tekli ve toplu denetimde aynı gövde kullanılır -->
+<template id="tpl-form">
+  <div class="sec" style="margin-top:20px">
+    <h2 class="sec__h">Çerçeveler</h2>
+    <div class="steprow"><span class="steprow__label">Arılı çerçeve</span>
+      <span class="stepper"><button class="stepper__btn" data-step="-1" aria-label="Arılı çerçeve azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">8</span><button class="stepper__btn" data-step="1" aria-label="Arılı çerçeve artır"><i class="mdi mdi-plus"></i></button></span></div>
+    <div class="steprow"><span class="steprow__label">Yavrulu çerçeve</span>
+      <span class="stepper"><button class="stepper__btn" data-step="-1" aria-label="Yavrulu çerçeve azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">5</span><button class="stepper__btn" data-step="1" aria-label="Yavrulu çerçeve artır"><i class="mdi mdi-plus"></i></button></span></div>
+    <div class="steprow"><span class="steprow__label">Ballı çerçeve</span>
+      <span class="stepper"><button class="stepper__btn" data-step="-1" aria-label="Ballı çerçeve azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">3</span><button class="stepper__btn" data-step="1" aria-label="Ballı çerçeve artır"><i class="mdi mdi-plus"></i></button></span></div>
+  </div>
+  <div class="sec">
+    <h2 class="sec__h">Kraliçe durumu</h2>
+    <div class="seg seg--2">
+      <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Görüldü</button>
+      <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Yumurta görüldü</button>
+      <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Görülmedi</button>
+      <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Kraliçesiz</button>
+    </div>
+  </div>
+  <div class="sec">
+    <h2 class="sec__h">Mizaç</h2>
+    <div class="seg seg--3">
+      <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Sakin</button>
+      <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Sinirli</button>
+      <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Saldırgan</button>
+    </div>
+  </div>
+  <div class="sec" data-varroa>
+    <div class="li" data-switch data-toggles="varroa" style="padding:0;min-height:56px"><span class="li__main"><span class="t-subtitle">Varroa sayımı</span></span><span class="switch is-on"></span></div>
+    <div data-varroa-body>
+      <p class="st" style="margin-top:8px">Yöntem</p>
+      <div class="chips">
+        <button class="opt is-selected"><i class="mdi mdi-check-circle opt__check"></i>Alkol yıkama</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Şeker silkeleme</button>
+        <button class="opt"><i class="mdi mdi-check-circle opt__check"></i>Yapışkan tabla</button>
+      </div>
+      <div class="steprow" style="margin-top:8px"><span class="steprow__label">Akar sayısı</span>
+        <span class="stepper" data-role="mites"><button class="stepper__btn" data-step="-1" aria-label="Akar sayısı azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">3</span><button class="stepper__btn" data-step="1" aria-label="Akar sayısı artır"><i class="mdi mdi-plus"></i></button></span></div>
+      <div class="steprow"><span class="steprow__label">Örnek büyüklüğü<small>arı sayısı</small></span>
+        <span class="stepper" data-role="sample" data-by="50" data-min="50"><button class="stepper__btn" data-step="-1" aria-label="Örnek büyüklüğü azalt"><i class="mdi mdi-minus"></i></button><span class="stepper__val">300</span><button class="stepper__btn" data-step="1" aria-label="Örnek büyüklüğü artır"><i class="mdi mdi-plus"></i></button></span></div>
+      <div class="result"><span class="t-strong">Bulaşıklık oranı</span><b data-role="pct">%1</b></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="field"><span class="field__label" style="font-size:22px;line-height:28px;font-weight:700;margin-bottom:12px">Not</span><div class="input input--area"><span class="input__ph">İstersen bir not yaz</span></div></div>
+  </div>
+</template>
+
+<script>
+/* ---------- Tekrarlanan çerçeve parçaları ---------- */
+const TABS=[['home','home-variant-outline','Ana Sayfa'],['apiary','beehive-outline','Arılıklar'],['calendar','calendar-month-outline','Takvim'],['settings','cog-outline','Ayarlar']];
+document.querySelectorAll('[data-sb]').forEach(e=>{e.className='statusbar';e.innerHTML='<span>09:41</span><span class="statusbar__r"><i class="mdi mdi-signal"></i><i class="mdi mdi-battery-70"></i></span>';});
+document.querySelectorAll('[data-tabs]').forEach(e=>{e.className='tabbar';e.innerHTML=TABS.map(t=>`<a class="tab${t[0]===e.dataset.tabs?' is-active':''}"><span class="tab__icon"><i class="mdi mdi-${t[1]}"></i></span>${t[2]}</a>`).join('');});
+document.querySelectorAll('[data-keypad]').forEach(e=>{e.className='keypad';e.setAttribute('aria-hidden','true');e.innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<span>${n}</span>`).join('')+'<span class="k0"></span><span>0</span><span class="k0"><i class="mdi mdi-backspace-outline"></i></span>';});
+const tpl=document.getElementById('tpl-form');
+document.querySelectorAll('[data-form]').forEach(e=>e.appendChild(tpl.content.cloneNode(true)));
+
+/* Bazı çerçeveler aşağı kaydırılmış açılır (formun devamını göstermek için) */
+const applyScroll=()=>document.querySelectorAll('[data-scroll]').forEach(e=>{e.scrollTop=+e.dataset.scroll;});
+window.addEventListener('load',applyScroll);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(applyScroll);
+
+/* ---------- Küçük etkileşimler: sayaç, seçim, anahtar, onay kutusu ---------- */
+function updVarroa(box){
+  if(!box)return;
+  const m=+box.querySelector('[data-role="mites"] .stepper__val').textContent;
+  const s=+box.querySelector('[data-role="sample"] .stepper__val').textContent;
+  const p=s?m/s*100:0;
+  box.querySelector('[data-role="pct"]').textContent='%'+(Math.round(p*10)/10).toString().replace('.',',');
+}
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-step]');
+  if(sb){
+    const st=sb.closest('.stepper'),v=st.querySelector('.stepper__val');
+    const by=+st.dataset.by||1,min=+st.dataset.min||0;
+    const n=Math.max(min,(+v.textContent)+(+sb.dataset.step)*by);
+    v.textContent=n;
+    st.querySelector('[data-step="-1"]').classList.toggle('is-disabled',n<=min);
+    updVarroa(st.closest('[data-varroa]'));
+    return;
+  }
+  const o=e.target.closest('button.opt');
+  if(o){
+    const g=o.parentElement;
+    if(g.hasAttribute('data-multi'))o.classList.toggle('is-selected');
+    else{g.querySelectorAll('.opt').forEach(x=>x.classList.remove('is-selected'));o.classList.add('is-selected');}
+    return;
+  }
+  const sw=e.target.closest('[data-switch]');
+  if(sw){
+    const on=sw.querySelector('.switch').classList.toggle('is-on');
+    if(sw.dataset.toggles==='varroa')sw.parentElement.querySelector('[data-varroa-body]').hidden=!on;
+    return;
+  }
+  const c=e.target.closest('.check');
+  if(c)c.classList.toggle('is-checked');
+});
+
+/* ---------- Renk tablosu: değerler CSS değişkenlerinden okunur ---------- */
+const COLORS=[
+ ['primary','Ana marka rengi (bal). Birincil düğme, seçili seçenek, etkin sekme.','on-primary'],
+ ['primary-pressed','Birincil düğmenin basılı hali.','on-primary'],
+ ['on-primary','Bal zemin üstündeki yazı ve ikon.','primary'],
+ ['primary-border','Bal dolgulu her öğenin 1,5 px kenarlığı. Sarının açık zeminde kaybolmasını önler.','background'],
+ ['primary-soft','Kovan plakası zemini, vurgulu satır.','text'],
+ ['secondary','İkincil vurgu (kestane). Metin düğmesi, bağlantı, geri düğmesi, onay kutusu, ilerleme çubuğu.','background'],
+ ['secondary-pressed','İkincil vurgunun basılı hali.','surface'],
+ ['on-secondary','Kestane zemin üstündeki yazı.','secondary'],
+ ['background','Ekran zemini (sıcak kâğıt).','text'],
+ ['surface','Kart, liste grubu, giriş kutusu, sekme çubuğu.','text'],
+ ['surface-alt','Basılı zemin, çevrimdışı şeridi, +90 ön eki, iskelet.','text'],
+ ['border','İnce ayırıcı ve kart kenarı. Süs amaçlı; dokunulabilir öğenin sınırı olarak kullanılmaz.','background'],
+ ['border-strong','Dokunulabilir öğelerin kenarlığı: giriş, sayaç, seçenek, ikincil düğme.','background'],
+ ['text','Ana metin (mürekkep).','background'],
+ ['text-muted','Yardımcı metin, ikincil bilgi, etkin olmayan sekme.','background'],
+ ['text-disabled','Devre dışı metin.','disabled-bg'],
+ ['disabled-bg','Devre dışı düğme ve giriş zemini.',null],
+ ['success','Olumlu durum: ikon, metin, açık anahtar.','surface'],
+ ['success-bg','Olumlu uyarı kutusu zemini.','text'],
+ ['warning','Uyarı: arınma süresi, gönderilemedi. Sarı değil turuncu; birincil renkle karışmaz.','surface'],
+ ['warning-bg','Uyarı kutusu ve şerit zemini.','text'],
+ ['danger','Hata, gecikme, silme. Tehlikeli düğme zemini.','surface'],
+ ['danger-pressed','Tehlikeli düğmenin basılı hali.','on-danger'],
+ ['on-danger','Tehlikeli düğme üstündeki yazı.','danger'],
+ ['danger-bg','Hata kutusu zemini.','text'],
+ ['info','Bilgi: gönderiliyor, açıklama.','surface'],
+ ['info-bg','Bilgi kutusu ve şerit zemini.','text'],
+ ['queen-white','Kraliçe işareti: yıl sonu 1 ve 6. Disk her zaman 2 px mürekkep kenarlı.','text'],
+ ['queen-yellow','Kraliçe işareti: 2 ve 7. Bal sarısından daha limon; karışmaz.','text'],
+ ['queen-red','Kraliçe işareti: 3 ve 8.','surface'],
+ ['queen-green','Kraliçe işareti: 4 ve 9.','surface'],
+ ['queen-blue','Kraliçe işareti: 5 ve 0.','surface'],
+ ['scrim','Alt sayfa arkasındaki karartma (%55 mürekkep).',null]
+];
+const cs=getComputedStyle(document.documentElement);
+const val=n=>cs.getPropertyValue('--color-'+n).trim();
+const camel=n=>n.replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
+function lum(hex){const h=hex.replace('#','');const c=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+function ratio(a,b){const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+document.querySelector('#colorTable tbody').innerHTML=COLORS.map(([n,use,pair])=>{
+  const v=val(n);let c='';
+  if(pair&&v.startsWith('#')){const r=ratio(v,val(pair));c=`<span class="cr"><b class="${r>=4.5?'ok':'low'}">${r.toFixed(1).replace('.',',')}:1</b></span><br><span class="muted" style="font-size:15px">${camel(pair)} ile</span>`;}
+  return `<tr><td><div class="sw" style="background:${v}"></div></td><td><code>${camel(n)}</code></td><td><code>--color-${n}</code></td><td><code>${v.toUpperCase()}</code></td><td>${use}</td><td>${c}</td></tr>`;
+}).join('');
+</script>
+</body>
+</html>
