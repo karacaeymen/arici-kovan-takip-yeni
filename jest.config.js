@@ -53,6 +53,7 @@ module.exports = {
     {
       displayName: 'ui',
       preset: 'jest-expo',
+      setupFiles: ['<rootDir>/src/test-utils/jest-setup-ui.ts'],
       testMatch: ['<rootDir>/src/**/*.test.tsx', '<rootDir>/src/features/*/hooks/**/*.test.ts'],
       moduleNameMapper,
     },
@@ -63,6 +64,8 @@ module.exports = {
     '!src/test-utils/**',
     '!src/**/index.ts',
   ],
+  // Kapsam ölçümüyle paralel koşuda ilk ekran testi modül yüklemesiyle 5 sn'yi aşabiliyor.
+  testTimeout: 15_000,
   // Eşik altında `npm run test:coverage` hata verir (domain ≥ %90, servisler ≥ %80 satır).
   coverageThreshold: coverageThresholds(),
 };

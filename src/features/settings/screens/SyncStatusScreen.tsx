@@ -41,6 +41,6 @@ export function SyncStatusScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, gap: spacing.lg },
+  content: { padding: spacing.screen, gap: spacing.lg },
   sectionTitle: { ...typography.subtitle, color: colors.text, marginTop: spacing.sm },
 });

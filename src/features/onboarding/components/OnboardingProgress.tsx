@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { t } from '../../../i18n';
-import { colors, radius, spacing, typography } from '../../../theme';
+import { colors, spacing, typography } from '../../../theme';
 
-// İlk açılış adımlarının ilerlemesi: "Adım 2 / 3" ve parçalı çubuk.
+// İlk açılış adımlarının ilerlemesi: "Adım 2 / 3" ve kestane dolgulu ilerleme çubuğu.
 
 export interface OnboardingProgressProps {
   /** 1'den başlar. */
@@ -22,10 +22,8 @@ export function OnboardingProgress({ current, total }: OnboardingProgressProps) 
       style={styles.container}
     >
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.bar}>
-        {Array.from({ length: total }, (_, i) => (
-          <View key={i} style={[styles.segment, i < current && styles.segmentDone]} />
-        ))}
+      <View style={styles.track}>
+        <View style={[styles.fill, { width: `${(current / total) * 100}%` }]} />
       </View>
     </View>
   );
@@ -33,8 +31,7 @@ export function OnboardingProgress({ current, total }: OnboardingProgressProps) 
 
 const styles = StyleSheet.create({
   container: { gap: spacing.sm },
-  label: { ...typography.caption, color: colors.textMuted },
-  bar: { flexDirection: 'row', gap: spacing.xs },
-  segment: { flex: 1, height: 6, borderRadius: radius.sm, backgroundColor: colors.disabled },
-  segmentDone: { backgroundColor: colors.primary },
+  label: { ...typography.captionStrong, color: colors.textMuted },
+  track: { height: 8, borderRadius: 4, backgroundColor: colors.border, overflow: 'hidden' },
+  fill: { height: '100%', backgroundColor: colors.secondary },
 });

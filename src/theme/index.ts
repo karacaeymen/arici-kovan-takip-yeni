@@ -1,4 +1,4 @@
 export { colors } from './colors';
-export { radius } from './radius';
-export { MIN_TOUCH_SIZE, spacing } from './spacing';
-export { typography } from './typography';
+export { radius, shadows } from './radius';
+export { CONTROL_BORDER, CONTROL_HEIGHT, MIN_TOUCH_SIZE, spacing, TAB_BAR_HEIGHT } from './spacing';
+export { fonts, typography } from './typography';

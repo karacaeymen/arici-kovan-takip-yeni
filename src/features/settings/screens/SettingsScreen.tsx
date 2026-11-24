@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { ListItem } from '../../../components/ui/ListItem/ListItem';
 import { t } from '../../../i18n';
-import { colors, spacing, typography } from '../../../theme';
+import { colors, radius, spacing, typography } from '../../../theme';
 import { SettingsMenuItem } from '../components/SettingsMenuItem';
 import { useAccount } from '../hooks/useAccount';
 import { useSyncStatus } from '../hooks/useSyncStatus';
@@ -30,6 +31,7 @@ export function SettingsScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.section}>
         <SettingsMenuItem
+          icon="sync"
           title={t('settings.syncStatus')}
           subtitle={syncSubtitle}
           onPress={() => router.push('/settings/sync-status')}
@@ -41,12 +43,10 @@ export function SettingsScreen() {
       </Text>
       <View style={styles.section}>
         {account.phone ? (
-          <View style={styles.info}>
-            <Text style={styles.infoLabel}>{t('settings.signedInAs')}</Text>
-            <Text style={styles.infoValue}>{account.phone}</Text>
-          </View>
+          <ListItem icon="cellphone" title={t('settings.signedInAs')} subtitle={account.phone} />
         ) : null}
         <SettingsMenuItem
+          icon="logout"
           title={t('settings.signOut')}
           onPress={confirmSignOut}
           disabled={account.signingOut}
@@ -64,16 +64,15 @@ export function SettingsScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingVertical: spacing.lg, gap: spacing.sm },
-  section: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
-  sectionTitle: {
-    ...typography.caption,
-    color: colors.textMuted,
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.lg,
+  content: { padding: spacing.screen, gap: spacing.sm },
+  // Liste grubu: beyaz zemin, ince kenar, yuvarlak köşe (docs/tasarim "group").
+  section: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
   },
-  info: { padding: spacing.lg, gap: spacing.xs, backgroundColor: colors.surface },
-  infoLabel: { ...typography.caption, color: colors.textMuted },
-  infoValue: { ...typography.body, color: colors.text },
-  error: { ...typography.caption, color: colors.danger, paddingHorizontal: spacing.lg },
+  sectionTitle: { ...typography.label, color: colors.textMuted, marginTop: spacing.lg },
+  error: { ...typography.captionStrong, color: colors.danger },
 });

@@ -5,6 +5,7 @@ import { ErrorBoundary as ErrorScreen } from '@/components/ui/ErrorBoundary/Erro
 import { DatabaseGate } from '@/data/db/DatabaseGate';
 import { reportScreenError } from '@/lib/observability/report';
 import { initObservability, wrapRoot } from '@/lib/observability/sentry';
+import { FontGate } from '@/theme/FontGate';
 
 // Açılışta ayarlar doğrulanır (eksikse anlaşılır hata) ve hata izleme başlar (TODO.md T0.7).
 initObservability();
@@ -18,9 +19,11 @@ function RootLayout() {
   return (
     <>
       <StatusBar style="dark" />
-      <DatabaseGate>
-        <Stack screenOptions={{ headerShown: false }} />
-      </DatabaseGate>
+      <FontGate>
+        <DatabaseGate>
+          <Stack screenOptions={{ headerShown: false }} />
+        </DatabaseGate>
+      </FontGate>
     </>
   );
 }

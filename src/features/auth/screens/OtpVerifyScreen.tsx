@@ -73,7 +73,7 @@ function OtpVerifyForm({ phone }: OtpVerifyScreenProps) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'center', padding: spacing.xl, gap: spacing.lg },
+  content: { flexGrow: 1, justifyContent: 'center', padding: spacing.screen, gap: spacing.lg },
   header: { gap: spacing.sm, marginBottom: spacing.sm },
   title: { ...typography.title, color: colors.text },
   subtitle: { ...typography.body, color: colors.textMuted },

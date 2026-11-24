@@ -1,9 +1,13 @@
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { t } from '../../../i18n';
+import { colors, spacing, typography } from '../../../theme';
+import { Button } from '../Button/Button';
 
 // Rota grubunda yakalanmamış bir hata olunca görünen ekran (TODO.md T0.7).
 // Expo Router `error` ve `retry` verir; `onError` ile hata bildirilir (bileşen Sentry'yi bilmez).
-// Metinler T0.8'de i18n'e, renkler src/theme'e taşınacak.
 
 export interface ErrorBoundaryProps {
   error: Error;
@@ -18,34 +22,26 @@ export function ErrorBoundary({ error, retry, onError }: ErrorBoundaryProps) {
 
   return (
     <View style={styles.container} accessibilityRole="alert">
-      <Text style={styles.title}>Bir şeyler ters gitti</Text>
-      <Text style={styles.message}>
-        Kayıtlarınız telefonda güvende. Tekrar deneyin; sorun sürerse uygulamayı yeniden açın.
-      </Text>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => void retry()}
-        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-      >
-        <Text style={styles.buttonText}>Tekrar dene</Text>
-      </Pressable>
+      <MaterialCommunityIcons name="alert-outline" size={64} color={colors.warning} />
+      <Text style={styles.title}>{t('errorBoundary.title')}</Text>
+      <Text style={styles.message}>{t('errorBoundary.message')}</Text>
+      <View style={styles.action}>
+        <Button label={t('errorBoundary.retry')} icon="refresh" onPress={() => void retry()} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
-  title: { fontSize: 22, fontWeight: '600', textAlign: 'center' },
-  message: { fontSize: 17, textAlign: 'center' },
-  // Saha kullanımı: eldivenle basılabilecek büyüklükte (en az 56 pt)
-  button: {
-    minHeight: 56,
-    minWidth: 200,
+  container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
-    backgroundColor: '#1f1f1f',
+    padding: spacing.screen,
+    gap: spacing.lg,
+    backgroundColor: colors.background,
   },
-  buttonPressed: { opacity: 0.8 },
-  buttonText: { color: '#ffffff', fontSize: 18, fontWeight: '600' },
+  title: { ...typography.title, color: colors.text, textAlign: 'center' },
+  message: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
+  action: { alignSelf: 'stretch' },
 });

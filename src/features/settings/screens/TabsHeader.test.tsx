@@ -46,10 +46,8 @@ describe('sekme ayarları', () => {
     expect(tabOptions('index').title).toBe('Ana Sayfa');
     expect(tabOptions('settings').title).toBe('Ayarlar');
 
-    await renderWithProviders(
-      <>{tabOptions('settings').tabBarIcon({ color: '#000', size: 24 })}</>,
-    );
-    expect(screen.getByText('settings-outline')).toBeOnTheScreen();
+    await renderWithProviders(<>{tabOptions('settings').tabBarIcon({ focused: true })}</>);
+    expect(screen.getByTestId('icon-cog-outline')).toBeOnTheScreen();
   });
 
   it('bütün sekmelerde senkron şeritli başlık kullanılır', async () => {
